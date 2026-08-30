@@ -19,6 +19,7 @@ import { Route as EntradasRouteImport } from './routes/entradas'
 import { Route as FornecedoresRouteImport } from './routes/fornecedores'
 import { Route as FuncionariosRouteImport } from './routes/funcionarios'
 import { Route as ManualRouteImport } from './routes/manual'
+import { Route as MenuRouteImport } from './routes/menu'
 import { Route as MesasRouteImport } from './routes/mesas'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
@@ -75,6 +76,11 @@ const ManualRoute = ManualRouteImport.update({
   path: '/manual',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MenuRoute = MenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MesasRoute = MesasRouteImport.update({
   id: '/mesas',
   path: '/mesas',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
+  '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
+  '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
+  '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
+    | '/menu'
     | '/mesas'
     | '/produtos'
     | '/relatorios'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
+    | '/menu'
     | '/mesas'
     | '/produtos'
     | '/relatorios'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
+    | '/menu'
     | '/mesas'
     | '/produtos'
     | '/relatorios'
@@ -218,6 +230,7 @@ export interface RootRouteChildren {
   FornecedoresRoute: typeof FornecedoresRoute
   FuncionariosRoute: typeof FuncionariosRoute
   ManualRoute: typeof ManualRoute
+  MenuRoute: typeof MenuRoute
   MesasRoute: typeof MesasRoute
   ProdutosRoute: typeof ProdutosRoute
   RelatoriosRoute: typeof RelatoriosRoute
@@ -297,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManualRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/menu': {
+      id: '/menu'
+      path: '/menu'
+      fullPath: '/menu'
+      preLoaderRoute: typeof MenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mesas': {
       id: '/mesas'
       path: '/mesas'
@@ -346,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   FornecedoresRoute: FornecedoresRoute,
   FuncionariosRoute: FuncionariosRoute,
   ManualRoute: ManualRoute,
+  MenuRoute: MenuRoute,
   MesasRoute: MesasRoute,
   ProdutosRoute: ProdutosRoute,
   RelatoriosRoute: RelatoriosRoute,

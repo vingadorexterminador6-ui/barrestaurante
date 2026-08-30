@@ -160,10 +160,22 @@ function OrderTab() {
     );
 
   const submit = () => {
-    if (cart.length === 0) return toast.error("Escolha pelo menos um produto.");
-    if (!name.trim()) return toast.error("Indique o seu nome.");
-    if (!phone.trim()) return toast.error("Indique o seu telefone.");
-    if (channel === "mesa" && !tableId) return toast.error("Escolha a mesa.");
+    if (cart.length === 0) {
+      toast.error("Escolha pelo menos um produto.");
+      return;
+    }
+    if (!name.trim()) {
+      toast.error("Indique o seu nome.");
+      return;
+    }
+    if (!phone.trim()) {
+      toast.error("Indique o seu telefone.");
+      return;
+    }
+    if (channel === "mesa" && !tableId) {
+      toast.error("Escolha a mesa.");
+      return;
+    }
     const order = placeOrder({
       customerName: name.trim(),
       phone: phone.trim(),
@@ -392,8 +404,14 @@ function ReservationTab() {
   );
 
   const submit = () => {
-    if (!form.customerName.trim()) return toast.error("Indique o seu nome.");
-    if (!form.phone.trim()) return toast.error("Indique o seu telefone.");
+    if (!form.customerName.trim()) {
+      toast.error("Indique o seu nome.");
+      return;
+    }
+    if (!form.phone.trim()) {
+      toast.error("Indique o seu telefone.");
+      return;
+    }
     const people = Number(form.people) || 1;
     const r = placeReservation({
       customerName: form.customerName.trim(),
