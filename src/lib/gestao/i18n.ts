@@ -1,0 +1,137 @@
+import type { Language } from "./types";
+
+export const LANGUAGES: { value: Language; label: string }[] = [
+  { value: "pt", label: "Português" },
+  { value: "en", label: "English" },
+  { value: "es", label: "Español" },
+  { value: "fr", label: "Français" },
+];
+
+type Dict = Record<string, string>;
+
+const pt: Dict = {
+  dashboard: "Dashboard",
+  sales: "Vendas / PDV",
+  tables: "Mesas",
+  products: "Produtos",
+  stock: "Stock",
+  purchases: "Compras",
+  cash: "Caixa",
+  expenses: "Despesas",
+  income: "Entradas",
+  customers: "Clientes",
+  employees: "Funcionários",
+  suppliers: "Fornecedores",
+  reports: "Relatórios",
+  settings: "Configurações",
+  manual: "Manual",
+  balance: "Saldo atual",
+  salesToday: "Vendas de hoje",
+  expensesToday: "Despesas de hoje",
+  stockValue: "Valor do stock",
+  profit: "Lucro estimado",
+  salesCount: "Número de vendas",
+  purchasesToday: "Compras do dia",
+  cashOpen: "Caixa aberta",
+  cashClosed: "Caixa fechada",
+  search: "Pesquisar",
+};
+
+const en: Dict = {
+  dashboard: "Dashboard",
+  sales: "Sales / POS",
+  tables: "Tables",
+  products: "Products",
+  stock: "Stock",
+  purchases: "Purchases",
+  cash: "Cash register",
+  expenses: "Expenses",
+  income: "Income",
+  customers: "Customers",
+  employees: "Employees",
+  suppliers: "Suppliers",
+  reports: "Reports",
+  settings: "Settings",
+  manual: "Manual",
+  balance: "Current balance",
+  salesToday: "Sales today",
+  expensesToday: "Expenses today",
+  stockValue: "Stock value",
+  profit: "Estimated profit",
+  salesCount: "Number of sales",
+  purchasesToday: "Purchases today",
+  cashOpen: "Register open",
+  cashClosed: "Register closed",
+  search: "Search",
+};
+
+const es: Dict = {
+  dashboard: "Panel",
+  sales: "Ventas / TPV",
+  tables: "Mesas",
+  products: "Productos",
+  stock: "Inventario",
+  purchases: "Compras",
+  cash: "Caja",
+  expenses: "Gastos",
+  income: "Ingresos",
+  customers: "Clientes",
+  employees: "Empleados",
+  suppliers: "Proveedores",
+  reports: "Informes",
+  settings: "Configuración",
+  manual: "Manual",
+  balance: "Saldo actual",
+  salesToday: "Ventas de hoy",
+  expensesToday: "Gastos de hoy",
+  stockValue: "Valor del inventario",
+  profit: "Beneficio estimado",
+  salesCount: "Número de ventas",
+  purchasesToday: "Compras del día",
+  cashOpen: "Caja abierta",
+  cashClosed: "Caja cerrada",
+  search: "Buscar",
+};
+
+const fr: Dict = {
+  dashboard: "Tableau de bord",
+  sales: "Ventes / Caisse",
+  tables: "Tables",
+  products: "Produits",
+  stock: "Stock",
+  purchases: "Achats",
+  cash: "Caisse",
+  expenses: "Dépenses",
+  income: "Recettes",
+  customers: "Clients",
+  employees: "Employés",
+  suppliers: "Fournisseurs",
+  reports: "Rapports",
+  settings: "Paramètres",
+  manual: "Manuel",
+  balance: "Solde actuel",
+  salesToday: "Ventes du jour",
+  expensesToday: "Dépenses du jour",
+  stockValue: "Valeur du stock",
+  profit: "Bénéfice estimé",
+  salesCount: "Nombre de ventes",
+  purchasesToday: "Achats du jour",
+  cashOpen: "Caisse ouverte",
+  cashClosed: "Caisse fermée",
+  search: "Rechercher",
+};
+
+const DICTS: Record<Language, Dict> = { pt, en, es, fr };
+
+export function translate(lang: Language, key: string): string {
+  return DICTS[lang]?.[key] ?? pt[key] ?? key;
+}
+
+export const CURRENCIES = [
+  { code: "MZN", symbol: "MT" },
+  { code: "USD", symbol: "$" },
+  { code: "EUR", symbol: "€" },
+  { code: "BRL", symbol: "R$" },
+  { code: "ZAR", symbol: "R" },
+  { code: "GBP", symbol: "£" },
+];
