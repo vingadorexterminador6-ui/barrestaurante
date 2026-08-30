@@ -324,26 +324,44 @@ function OrderTab() {
               </div>
             ) : null}
 
-            <div className="space-y-1.5">
-              <Label className="text-xs">Pagamento</Label>
-              <Select value={payMethod} onValueChange={setPayMethod}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="na-entrega">Pagar no local / na entrega</SelectItem>
-                  {state.settings.paymentMethods.map((pm) => (
-                    <SelectItem key={pm} value={pm}>
-                      Já paguei por {pm}
-                    </SelectItem>
+            <div className="space-y-2">
+              <Label className="text-xs">Forma de pagamento</Label>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setPayMethod("na-entrega")}
+                  className={`rounded-lg border p-3 text-left text-sm transition-colors ${
+                    payMethod === "na-entrega"
+                      ? "border-primary bg-accent/60"
+                      : "border-border hover:border-primary/60"
+                  }`}
+                >
+                  <span className="block font-medium">Dinheiro físico</span>
+                  <span className="block text-xs text-muted-foreground">Pagar no local / na entrega</span>
+                </button>
+                {state.settings.paymentMethods
+                  .filter((pm) => pm.toLowerCase() !== "dinheiro")
+                  .map((pm) => (
+                    <button
+                      key={pm}
+                      type="button"
+                      onClick={() => setPayMethod(pm)}
+                      className={`rounded-lg border p-3 text-left text-sm transition-colors ${
+                        payMethod === pm
+                          ? "border-primary bg-accent/60"
+                          : "border-border hover:border-primary/60"
+                      }`}
+                    >
+                      <span className="block font-medium">{pm}</span>
+                      <span className="block text-xs text-muted-foreground">Já paguei / vou pagar por {pm}</span>
+                    </button>
                   ))}
-                </SelectContent>
-              </Select>
+              </div>
               {payMethod !== "na-entrega" ? (
                 <Input
                   value={payRef}
                   onChange={(e) => setPayRef(e.target.value)}
-                  placeholder="Referência / comprovativo do pagamento"
+                  placeholder={`Referência / comprovativo do pagamento (${payMethod})`}
                 />
               ) : null}
             </div>
