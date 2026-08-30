@@ -177,7 +177,7 @@ interface StoreValue {
   saveEmployee: (e: Omit<Employee, "id"> & { id?: string | undefined }) => void;
   deleteEmployee: (id: string) => void;
   // tables
-  saveTable: (t: { id?: string; name: string; area: string }) => void;
+  saveTable: (t: { id?: string | undefined; name: string; area: string }) => void;
   deleteTable: (id: string) => void;
   setTableStatus: (id: string, status: TableStatus) => void;
   addTableItem: (tableId: string, productId: string, qty: number) => void;
