@@ -21,6 +21,7 @@ import { Route as FuncionariosRouteImport } from './routes/funcionarios'
 import { Route as ManualRouteImport } from './routes/manual'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as MesasRouteImport } from './routes/mesas'
+import { Route as PedidosRouteImport } from './routes/pedidos'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as StockRouteImport } from './routes/stock'
@@ -86,6 +87,11 @@ const MesasRoute = MesasRouteImport.update({
   path: '/mesas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PedidosRoute = PedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/manual': typeof ManualRoute
   '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
+  '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
   '/stock': typeof StockRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/manual': typeof ManualRoute
   '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
+  '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
   '/stock': typeof StockRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/manual': typeof ManualRoute
   '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
+  '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
   '/stock': typeof StockRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/manual'
     | '/menu'
     | '/mesas'
+    | '/pedidos'
     | '/produtos'
     | '/relatorios'
     | '/stock'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/manual'
     | '/menu'
     | '/mesas'
+    | '/pedidos'
     | '/produtos'
     | '/relatorios'
     | '/stock'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/manual'
     | '/menu'
     | '/mesas'
+    | '/pedidos'
     | '/produtos'
     | '/relatorios'
     | '/stock'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   ManualRoute: typeof ManualRoute
   MenuRoute: typeof MenuRoute
   MesasRoute: typeof MesasRoute
+  PedidosRoute: typeof PedidosRoute
   ProdutosRoute: typeof ProdutosRoute
   RelatoriosRoute: typeof RelatoriosRoute
   StockRoute: typeof StockRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MesasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pedidos': {
+      id: '/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof PedidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   ManualRoute: ManualRoute,
   MenuRoute: MenuRoute,
   MesasRoute: MesasRoute,
+  PedidosRoute: PedidosRoute,
   ProdutosRoute: ProdutosRoute,
   RelatoriosRoute: RelatoriosRoute,
   StockRoute: StockRoute,
