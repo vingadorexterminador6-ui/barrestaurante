@@ -216,6 +216,50 @@ export interface AppState {
   inventoryMovements: InventoryMovement[];
   dailyClosings: DailyClosing[];
   auditLogs: AuditLog[];
+  orders: CustomerOrder[];
+  reservations: Reservation[];
   cashOpen: boolean;
   cashOpenedAt?: string | undefined;
+}
+
+export type OrderChannel = "mesa" | "takeaway";
+export type OrderStatus = "novo" | "aceite" | "pronto" | "entregue" | "cancelado";
+export type PaymentStatus = "pendente" | "declarado" | "pago";
+
+export interface CustomerOrder {
+  id: string;
+  code: string;
+  date: string;
+  customerName: string;
+  phone: string;
+  channel: OrderChannel;
+  tableId?: string | undefined;
+  tableName?: string | undefined;
+  items: SaleItem[];
+  total: number;
+  note?: string | undefined;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod?: string | undefined;
+  paymentRef?: string | undefined;
+  saleId?: string | undefined;
+}
+
+export type ReservationStatus = "pendente" | "confirmada" | "recusada" | "concluida";
+
+export interface Reservation {
+  id: string;
+  code: string;
+  createdAt: string;
+  customerName: string;
+  phone: string;
+  email?: string | undefined;
+  date: string;
+  time: string;
+  people: number;
+  area?: string | undefined;
+  note?: string | undefined;
+  tableId?: string | undefined;
+  tableName?: string | undefined;
+  status: ReservationStatus;
 }
