@@ -131,7 +131,7 @@ interface StoreValue {
   }) => void;
   resetSetup: () => void;
   // products
-  saveProduct: (p: Omit<Product, "id"> & { id?: string }) => void;
+  saveProduct: (p: Omit<Product, "id"> & { id?: string | undefined }) => void;
   deleteProduct: (id: string) => void;
   // stock
   addStockMovement: (input: {
@@ -170,11 +170,11 @@ interface StoreValue {
     note?: string;
   }) => void;
   // people
-  saveSupplier: (s: Omit<Supplier, "id"> & { id?: string }) => void;
+  saveSupplier: (s: Omit<Supplier, "id"> & { id?: string | undefined }) => void;
   deleteSupplier: (id: string) => void;
-  saveCustomer: (c: Omit<Customer, "id"> & { id?: string }) => void;
+  saveCustomer: (c: Omit<Customer, "id"> & { id?: string | undefined }) => void;
   deleteCustomer: (id: string) => void;
-  saveEmployee: (e: Omit<Employee, "id"> & { id?: string }) => void;
+  saveEmployee: (e: Omit<Employee, "id"> & { id?: string | undefined }) => void;
   deleteEmployee: (id: string) => void;
   // tables
   saveTable: (t: { id?: string; name: string; area: string }) => void;
