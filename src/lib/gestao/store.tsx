@@ -14,14 +14,19 @@ import type {
   CashMovement,
   CashType,
   Customer,
+  CustomerOrder,
   DailyClosing,
   Employee,
   Expense,
   Income,
   InventoryMovement,
   Product,
+  OrderChannel,
+  OrderStatus,
   Purchase,
   PurchaseItem,
+  Reservation,
+  ReservationStatus,
   RestaurantTable,
   Sale,
   SaleItem,
@@ -87,6 +92,8 @@ export const defaultState = (): AppState => ({
   inventoryMovements: [],
   dailyClosings: [],
   auditLogs: [],
+  orders: [],
+  reservations: [],
   cashOpen: false,
 });
 
@@ -184,6 +191,34 @@ interface StoreValue {
   removeTableItem: (tableId: string, productId: string) => void;
   transferTable: (fromId: string, toId: string) => void;
   clearTable: (id: string) => void;
+  // customer orders & reservations
+  placeOrder: (input: {
+    customerName: string;
+    phone: string;
+    channel: OrderChannel;
+    tableId?: string | undefined;
+    items: SaleItem[];
+    note?: string | undefined;
+    paymentMethod?: string | undefined;
+    paymentRef?: string | undefined;
+  }) => CustomerOrder;
+  setOrderStatus: (id: string, status: OrderStatus) => void;
+  confirmOrderPayment: (id: string, paymentMethod: string) => void;
+  placeReservation: (input: {
+    customerName: string;
+    phone: string;
+    email?: string | undefined;
+    date: string;
+    time: string;
+    people: number;
+    area?: string | undefined;
+    note?: string | undefined;
+  }) => Reservation;
+  setReservationStatus: (
+    id: string,
+    status: ReservationStatus,
+    tableId?: string | undefined,
+  ) => void;
   // closing
   closeDay: () => DailyClosing | null;
   // data
@@ -636,6 +671,166 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             tb.id === id ? { ...tb, items: [], status: "livre" as TableStatus } : tb,
           ),
         })),
+
+      placeOrder: ({ customerName, phone, channel, tableId, items, note, paymentMethod, paymentRef }) => {
+        const total = items.reduce((a, i) => a + i.subtotal, 0);
+        const table = state.tables.find((tb) => tb.id === tableId);
+        const order: CustomerOrder = {
+          id: uid(),
+          code: `PD-${String(state.orders.length + 1).padStart(4, "0")}`,
+          date: now(),
+          customerName,
+          phone,
+          channel,
+          tableId,
+          tableName: table?.name,
+          items,
+          total,
+          note,
+          status: "novo",
+          paymentStatus: paymentMethod ? "declarado" : "pendente",
+          paymentMethod,
+          paymentRef,
+        };
+        patch((s) =>
+          log({ ...s, orders: [order, ...s.orders] }, "Pedido do cliente", `${order.code} — ${customerName}`, total),
+        );
+        return order;
+      },
+      setOrderStatus: (id, status) =>
+        patch((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (!order) return s;
+          let tables = s.tables;
+          if (status === "aceite" && order.channel === "mesa" && order.tableId) {
+            tables = s.tables.map((tb) => {
+              if (tb.id !== order.tableId) return tb;
+              const items = [...tb.items];
+              order.items.forEach((i) => {
+                const existing = items.find((x) => x.productId === i.productId);
+                if (existing) existing.qty += i.qty;
+                else items.push({ productId: i.productId, name: i.name, qty: i.qty, unitPrice: i.unitPrice });
+              });
+              return { ...tb, items, status: "ocupada" as TableStatus };
+            });
+          }
+          return log(
+            { ...s, tables, orders: s.orders.map((o) => (o.id === id ? { ...o, status } : o)) },
+            `Pedido: ${status}`,
+            order.code,
+          );
+        }),
+      confirmOrderPayment: (id, paymentMethod) =>
+        patch((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (!order || order.paymentStatus === "pago") return s;
+          const sale: Sale = {
+            id: uid(),
+            date: now(),
+            items: order.items,
+            discount: 0,
+            total: order.total,
+            paymentMethod,
+            tableId: order.tableId,
+          };
+          const inv: InventoryMovement[] = [];
+          const products = s.products.map((p) => {
+            const item = order.items.find((i) => i.productId === p.id);
+            if (!item) return p;
+            inv.push({
+              id: uid(),
+              date: sale.date,
+              productId: p.id,
+              productName: p.name,
+              type: "saida",
+              qty: item.qty,
+              reason: `Pedido ${order.code}`,
+              value: item.subtotal,
+            });
+            return { ...p, stock: Math.max(0, p.stock - item.qty) };
+          });
+          const cash: CashMovement = {
+            id: uid(),
+            date: sale.date,
+            type: "entrada",
+            amount: order.total,
+            category: "Venda",
+            description: `Pedido ${order.code} — ${order.customerName}`,
+            paymentMethod,
+            refId: sale.id,
+          };
+          return log(
+            {
+              ...s,
+              sales: [sale, ...s.sales],
+              products,
+              inventoryMovements: [...inv, ...s.inventoryMovements],
+              cashMovements: [cash, ...s.cashMovements],
+              tables: order.tableId
+                ? s.tables.map((tb) =>
+                    tb.id === order.tableId
+                      ? { ...tb, items: [], status: "livre" as TableStatus }
+                      : tb,
+                  )
+                : s.tables,
+              orders: s.orders.map((o) =>
+                o.id === id
+                  ? {
+                      ...o,
+                      paymentStatus: "pago" as const,
+                      paymentMethod,
+                      status: "entregue" as OrderStatus,
+                      saleId: sale.id,
+                    }
+                  : o,
+              ),
+            },
+            "Pagamento confirmado",
+            `${order.code} — ${paymentMethod}`,
+            order.total,
+          );
+        }),
+      placeReservation: (input) => {
+        const reservation: Reservation = {
+          id: uid(),
+          code: `RS-${String(state.reservations.length + 1).padStart(4, "0")}`,
+          createdAt: now(),
+          status: "pendente",
+          ...input,
+        };
+        patch((s) =>
+          log(
+            { ...s, reservations: [reservation, ...s.reservations] },
+            "Reserva solicitada",
+            `${reservation.code} — ${reservation.customerName}`,
+          ),
+        );
+        return reservation;
+      },
+      setReservationStatus: (id, status, tableId) =>
+        patch((s) => {
+          const reservation = s.reservations.find((r) => r.id === id);
+          if (!reservation) return s;
+          const table = tableId ? s.tables.find((tb) => tb.id === tableId) : undefined;
+          return log(
+            {
+              ...s,
+              tables:
+                status === "confirmada" && table
+                  ? s.tables.map((tb) =>
+                      tb.id === table.id ? { ...tb, status: "reservada" as TableStatus } : tb,
+                    )
+                  : s.tables,
+              reservations: s.reservations.map((r) =>
+                r.id === id
+                  ? { ...r, status, tableId: table?.id ?? r.tableId, tableName: table?.name ?? r.tableName }
+                  : r,
+              ),
+            },
+            `Reserva: ${status}`,
+            reservation.code,
+          );
+        }),
 
       closeDay: () => {
         const today = new Date();

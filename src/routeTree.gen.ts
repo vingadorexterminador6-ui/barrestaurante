@@ -19,7 +19,9 @@ import { Route as EntradasRouteImport } from './routes/entradas'
 import { Route as FornecedoresRouteImport } from './routes/fornecedores'
 import { Route as FuncionariosRouteImport } from './routes/funcionarios'
 import { Route as ManualRouteImport } from './routes/manual'
+import { Route as MenuRouteImport } from './routes/menu'
 import { Route as MesasRouteImport } from './routes/mesas'
+import { Route as PedidosRouteImport } from './routes/pedidos'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as StockRouteImport } from './routes/stock'
@@ -75,9 +77,19 @@ const ManualRoute = ManualRouteImport.update({
   path: '/manual',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MenuRoute = MenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MesasRoute = MesasRouteImport.update({
   id: '/mesas',
   path: '/mesas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PedidosRoute = PedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutosRoute = ProdutosRouteImport.update({
@@ -112,7 +124,9 @@ export interface FileRoutesByFullPath {
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
+  '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
+  '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
   '/stock': typeof StockRoute
@@ -129,7 +143,9 @@ export interface FileRoutesByTo {
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
+  '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
+  '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
   '/stock': typeof StockRoute
@@ -147,7 +163,9 @@ export interface FileRoutesById {
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
+  '/menu': typeof MenuRoute
   '/mesas': typeof MesasRoute
+  '/pedidos': typeof PedidosRoute
   '/produtos': typeof ProdutosRoute
   '/relatorios': typeof RelatoriosRoute
   '/stock': typeof StockRoute
@@ -166,7 +184,9 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
+    | '/menu'
     | '/mesas'
+    | '/pedidos'
     | '/produtos'
     | '/relatorios'
     | '/stock'
@@ -183,7 +203,9 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
+    | '/menu'
     | '/mesas'
+    | '/pedidos'
     | '/produtos'
     | '/relatorios'
     | '/stock'
@@ -200,7 +222,9 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
+    | '/menu'
     | '/mesas'
+    | '/pedidos'
     | '/produtos'
     | '/relatorios'
     | '/stock'
@@ -218,7 +242,9 @@ export interface RootRouteChildren {
   FornecedoresRoute: typeof FornecedoresRoute
   FuncionariosRoute: typeof FuncionariosRoute
   ManualRoute: typeof ManualRoute
+  MenuRoute: typeof MenuRoute
   MesasRoute: typeof MesasRoute
+  PedidosRoute: typeof PedidosRoute
   ProdutosRoute: typeof ProdutosRoute
   RelatoriosRoute: typeof RelatoriosRoute
   StockRoute: typeof StockRoute
@@ -297,11 +323,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManualRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/menu': {
+      id: '/menu'
+      path: '/menu'
+      fullPath: '/menu'
+      preLoaderRoute: typeof MenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mesas': {
       id: '/mesas'
       path: '/mesas'
       fullPath: '/mesas'
       preLoaderRoute: typeof MesasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pedidos': {
+      id: '/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof PedidosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produtos': {
@@ -346,7 +386,9 @@ const rootRouteChildren: RootRouteChildren = {
   FornecedoresRoute: FornecedoresRoute,
   FuncionariosRoute: FuncionariosRoute,
   ManualRoute: ManualRoute,
+  MenuRoute: MenuRoute,
   MesasRoute: MesasRoute,
+  PedidosRoute: PedidosRoute,
   ProdutosRoute: ProdutosRoute,
   RelatoriosRoute: RelatoriosRoute,
   StockRoute: StockRoute,
