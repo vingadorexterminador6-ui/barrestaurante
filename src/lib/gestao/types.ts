@@ -11,7 +11,7 @@ export interface Establishment {
   address: string;
   city: string;
   country: string;
-  logo?: string;
+  logo?: string | undefined;
 }
 
 export interface Settings {
@@ -39,8 +39,8 @@ export interface Product {
   salePrice: number;
   stock: number;
   minStock: number;
-  supplierId?: string;
-  photo?: string;
+  supplierId?: string | undefined;
+  photo?: string | undefined;
   active: boolean;
 }
 
@@ -59,9 +59,9 @@ export interface Sale {
   discount: number;
   total: number;
   paymentMethod: string;
-  customerId?: string;
-  employeeId?: string;
-  tableId?: string;
+  customerId?: string | undefined;
+  employeeId?: string | undefined;
+  tableId?: string | undefined;
 }
 
 export interface Expense {
@@ -71,7 +71,7 @@ export interface Expense {
   description: string;
   amount: number;
   paymentMethod: string;
-  note?: string;
+  note?: string | undefined;
 }
 
 export interface Income {
@@ -94,12 +94,12 @@ export interface PurchaseItem {
 export interface Purchase {
   id: string;
   date: string;
-  supplierId?: string;
+  supplierId?: string | undefined;
   supplierName: string;
   items: PurchaseItem[];
   total: number;
   paymentMethod: string;
-  note?: string;
+  note?: string | undefined;
 }
 
 export interface Supplier {
@@ -110,7 +110,7 @@ export interface Supplier {
   email: string;
   address: string;
   products: string;
-  note?: string;
+  note?: string | undefined;
 }
 
 export interface Customer {
@@ -119,7 +119,7 @@ export interface Customer {
   phone: string;
   email: string;
   address: string;
-  note?: string;
+  note?: string | undefined;
 }
 
 export interface Employee {
@@ -130,7 +130,7 @@ export interface Employee {
   salary: number;
   hiredAt: string;
   active: boolean;
-  note?: string;
+  note?: string | undefined;
 }
 
 export type TableStatus = "livre" | "ocupada" | "reservada" | "aguardando";
@@ -159,8 +159,8 @@ export interface CashMovement {
   amount: number;
   category: string;
   description: string;
-  paymentMethod?: string;
-  refId?: string;
+  paymentMethod?: string | undefined;
+  refId?: string | undefined;
 }
 
 export type StockMovementType = "entrada" | "saida" | "ajuste" | "perda";
@@ -195,7 +195,7 @@ export interface AuditLog {
   date: string;
   operation: string;
   detail: string;
-  amount?: number;
+  amount?: number | undefined;
 }
 
 export interface AppState {
@@ -217,5 +217,5 @@ export interface AppState {
   dailyClosings: DailyClosing[];
   auditLogs: AuditLog[];
   cashOpen: boolean;
-  cashOpenedAt?: string;
+  cashOpenedAt?: string | undefined;
 }
