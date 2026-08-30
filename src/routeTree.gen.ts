@@ -15,6 +15,7 @@ import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as EntradasRouteImport } from './routes/entradas'
+import { Route as FuncionariosRouteImport } from './routes/funcionarios'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as StockRouteImport } from './routes/stock'
 import { Route as VendasRouteImport } from './routes/vendas'
@@ -49,6 +50,11 @@ const EntradasRoute = EntradasRouteImport.update({
   path: '/entradas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FuncionariosRoute = FuncionariosRouteImport.update({
+  id: '/funcionarios',
+  path: '/funcionarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/compras': typeof ComprasRoute
   '/despesas': typeof DespesasRoute
   '/entradas': typeof EntradasRoute
+  '/funcionarios': typeof FuncionariosRoute
   '/produtos': typeof ProdutosRoute
   '/stock': typeof StockRoute
   '/vendas': typeof VendasRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/compras': typeof ComprasRoute
   '/despesas': typeof DespesasRoute
   '/entradas': typeof EntradasRoute
+  '/funcionarios': typeof FuncionariosRoute
   '/produtos': typeof ProdutosRoute
   '/stock': typeof StockRoute
   '/vendas': typeof VendasRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/compras': typeof ComprasRoute
   '/despesas': typeof DespesasRoute
   '/entradas': typeof EntradasRoute
+  '/funcionarios': typeof FuncionariosRoute
   '/produtos': typeof ProdutosRoute
   '/stock': typeof StockRoute
   '/vendas': typeof VendasRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/despesas'
     | '/entradas'
+    | '/funcionarios'
     | '/produtos'
     | '/stock'
     | '/vendas'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/despesas'
     | '/entradas'
+    | '/funcionarios'
     | '/produtos'
     | '/stock'
     | '/vendas'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/despesas'
     | '/entradas'
+    | '/funcionarios'
     | '/produtos'
     | '/stock'
     | '/vendas'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   ComprasRoute: typeof ComprasRoute
   DespesasRoute: typeof DespesasRoute
   EntradasRoute: typeof EntradasRoute
+  FuncionariosRoute: typeof FuncionariosRoute
   ProdutosRoute: typeof ProdutosRoute
   StockRoute: typeof StockRoute
   VendasRoute: typeof VendasRoute
@@ -191,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EntradasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/funcionarios': {
+      id: '/funcionarios'
+      path: '/funcionarios'
+      fullPath: '/funcionarios'
+      preLoaderRoute: typeof FuncionariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComprasRoute: ComprasRoute,
   DespesasRoute: DespesasRoute,
   EntradasRoute: EntradasRoute,
+  FuncionariosRoute: FuncionariosRoute,
   ProdutosRoute: ProdutosRoute,
   StockRoute: StockRoute,
   VendasRoute: VendasRoute,
