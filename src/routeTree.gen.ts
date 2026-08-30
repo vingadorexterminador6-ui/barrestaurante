@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CaixaRouteImport } from './routes/caixa'
 import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as DespesasRouteImport } from './routes/despesas'
+import { Route as EntradasRouteImport } from './routes/entradas'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as StockRouteImport } from './routes/stock'
 import { Route as VendasRouteImport } from './routes/vendas'
@@ -37,6 +38,11 @@ const DespesasRoute = DespesasRouteImport.update({
   path: '/despesas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EntradasRoute = EntradasRouteImport.update({
+  id: '/entradas',
+  path: '/entradas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/caixa': typeof CaixaRoute
   '/compras': typeof ComprasRoute
   '/despesas': typeof DespesasRoute
+  '/entradas': typeof EntradasRoute
   '/produtos': typeof ProdutosRoute
   '/stock': typeof StockRoute
   '/vendas': typeof VendasRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/caixa': typeof CaixaRoute
   '/compras': typeof ComprasRoute
   '/despesas': typeof DespesasRoute
+  '/entradas': typeof EntradasRoute
   '/produtos': typeof ProdutosRoute
   '/stock': typeof StockRoute
   '/vendas': typeof VendasRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/caixa': typeof CaixaRoute
   '/compras': typeof ComprasRoute
   '/despesas': typeof DespesasRoute
+  '/entradas': typeof EntradasRoute
   '/produtos': typeof ProdutosRoute
   '/stock': typeof StockRoute
   '/vendas': typeof VendasRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/caixa'
     | '/compras'
     | '/despesas'
+    | '/entradas'
     | '/produtos'
     | '/stock'
     | '/vendas'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/caixa'
     | '/compras'
     | '/despesas'
+    | '/entradas'
     | '/produtos'
     | '/stock'
     | '/vendas'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/caixa'
     | '/compras'
     | '/despesas'
+    | '/entradas'
     | '/produtos'
     | '/stock'
     | '/vendas'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   CaixaRoute: typeof CaixaRoute
   ComprasRoute: typeof ComprasRoute
   DespesasRoute: typeof DespesasRoute
+  EntradasRoute: typeof EntradasRoute
   ProdutosRoute: typeof ProdutosRoute
   StockRoute: typeof StockRoute
   VendasRoute: typeof VendasRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DespesasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/entradas': {
+      id: '/entradas'
+      path: '/entradas'
+      fullPath: '/entradas'
+      preLoaderRoute: typeof EntradasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   CaixaRoute: CaixaRoute,
   ComprasRoute: ComprasRoute,
   DespesasRoute: DespesasRoute,
+  EntradasRoute: EntradasRoute,
   ProdutosRoute: ProdutosRoute,
   StockRoute: StockRoute,
   VendasRoute: VendasRoute,
