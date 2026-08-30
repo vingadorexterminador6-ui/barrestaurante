@@ -127,12 +127,31 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Ao recarregar/atualizar o sistema, volta sempre ao painel inicial.
+ * A área do cliente (/menu) mantém-se, para não quebrar links partilhados.
+ */
+function ResetToHomeOnReload() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path !== "/" && !path.startsWith("/menu")) {
+      void router.navigate({ to: "/", replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
+        <ResetToHomeOnReload />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster richColors position="top-right" />
