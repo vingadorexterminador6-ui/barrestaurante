@@ -91,6 +91,7 @@ export const defaultState = (): AppState => ({
   cashMovements: [],
   inventoryMovements: [],
   dailyClosings: [],
+  periodClosings: [],
   auditLogs: [],
   orders: [],
   reservations: [],
