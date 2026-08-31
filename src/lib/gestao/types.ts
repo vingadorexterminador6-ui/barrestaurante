@@ -235,6 +235,7 @@ export interface AppState {
   cashMovements: CashMovement[];
   inventoryMovements: InventoryMovement[];
   dailyClosings: DailyClosing[];
+  periodClosings: PeriodClosing[];
   auditLogs: AuditLog[];
   orders: CustomerOrder[];
   reservations: Reservation[];
