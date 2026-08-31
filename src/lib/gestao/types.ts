@@ -191,6 +191,25 @@ export interface DailyClosing {
   salesCount: number;
 }
 
+export type ClosingPeriod = "semanal" | "mensal";
+
+export interface PeriodClosing {
+  id: string;
+  period: ClosingPeriod;
+  date: string;
+  startDate: string;
+  endDate: string;
+  label: string;
+  salesTotal: number;
+  otherIncome: number;
+  expensesTotal: number;
+  purchasesTotal: number;
+  inflowsTotal: number;
+  outflowsTotal: number;
+  result: number;
+  salesCount: number;
+}
+
 export interface AuditLog {
   id: string;
   date: string;
