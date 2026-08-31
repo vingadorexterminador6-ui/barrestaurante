@@ -143,7 +143,7 @@ function ResetToHomeOnReload() {
 
   useEffect(() => {
     const path = window.location.pathname;
-    if (path !== "/" && !path.startsWith("/menu")) {
+    if (path !== "/" && !path.startsWith("/menu") && !path.startsWith("/conversa")) {
       void router.navigate({ to: "/", replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
