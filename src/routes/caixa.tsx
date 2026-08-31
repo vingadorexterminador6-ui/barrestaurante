@@ -56,7 +56,7 @@ const OPERATIONS: { key: string; label: string; type: CashType }[] = [
 ];
 
 function CashPage() {
-  const { state, money, openCash, closeCash, addCashMovement, closeDay } = useStore();
+  const { state, money, openCash, closeCash, addCashMovement, closeDay, closePeriod } = useStore();
   const m = useMetrics();
   const [dialog, setDialog] = useState<{ open: boolean; operation: string; type: CashType }>({
     open: false,
