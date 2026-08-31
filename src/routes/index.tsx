@@ -1,291 +1,199 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { useState } from "react";
-import { toast } from "sonner";
+  ArrowRight,
+  CalendarCheck,
+  ChefHat,
+  Clock,
+  LayoutDashboard,
+  MapPin,
+  Phone,
+  ShoppingBag,
+  Sparkles,
+  UtensilsCrossed,
+} from "lucide-react";
 
-import { AppShell } from "@/components/gestao/AppShell";
-import { SetupWizard, Welcome } from "@/components/gestao/SetupWizard";
-import { EmptyState, SectionCard, StatCard } from "@/components/gestao/ui-bits";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useMetrics, useStore } from "@/lib/gestao/store";
+import { useStore } from "@/lib/gestao/store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Gestão de Bar e Restaurante" },
+      { title: "Restaurante & Bar — Menu, Reservas e Pedidos Online" },
       {
         name: "description",
         content:
-          "Painel de gestão para bares e restaurantes: caixa, vendas, stock, despesas e relatórios num só lugar.",
+          "Conheça o nosso restaurante e bar: veja o menu, faça o seu pedido online e reserve a sua mesa em poucos segundos.",
       },
-      { property: "og:title", content: "Dashboard — Gestão de Bar e Restaurante" },
+      { property: "og:title", content: "Restaurante & Bar — Menu, Reservas e Pedidos Online" },
       {
         property: "og:description",
-        content: "Controle caixa, vendas, stock, compras e relatórios do seu estabelecimento.",
+        content: "Menu digital, pedidos online, reservas de mesa e pagamento por M-Pesa, e-Mola ou dinheiro.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Home,
+  component: WebsitePage,
 });
 
-function Home() {
-  const { state, hydrated } = useStore();
-  const [phase, setPhase] = useState<"welcome" | "wizard">("welcome");
-
-  if (!hydrated) {
-    return <div className="min-h-screen bg-background" />;
-  }
-
-  if (!state.setupDone) {
-    return phase === "welcome" ? (
-      <Welcome onStart={() => setPhase("wizard")} />
-    ) : (
-      <SetupWizard onCancel={() => setPhase("welcome")} />
-    );
-  }
-
-  return <Dashboard />;
-}
-
-function Dashboard() {
-  const { state, money, t, closeDay } = useStore();
-  const m = useMetrics();
-  const [confirmClose, setConfirmClose] = useState(false);
-
-  const today = new Date().toLocaleDateString("pt-PT", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-
-  const stockChart = [
-    {
-      name: "Normal",
-      value: state.products.filter((p) => p.stock > p.minStock).length,
-      color: "var(--color-safe)",
-    },
-    { name: "Baixo", value: m.lowStock.length, color: "var(--color-warning)" },
-    { name: "Esgotado", value: m.outOfStock.length, color: "var(--color-danger)" },
-  ].filter((x) => x.value > 0);
-
-  const flowChart = [
-    {
-      name: "Hoje",
-      Entradas: m.salesTodayTotal,
-      Saidas: m.expensesTodayTotal + m.purchasesTodayTotal,
-    },
-  ];
+function WebsitePage() {
+  const { state, money, hydrated } = useStore();
+  const est = state.establishment;
+  const name = est.name || "O Nosso Restaurante";
+  const destaques = state.products.filter((p) => p.active).slice(0, 6);
 
   return (
-    <AppShell
-      title={state.establishment.name || t("dashboard")}
-      subtitle={today}
-      actions={
-        <>
-          <Button asChild size="sm">
-            <Link to="/vendas">Nova venda</Link>
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => setConfirmClose(true)}>
-            Fechar dia
-          </Button>
-        </>
-      }
-    >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label={`💰 ${t("balance")}`} value={money(m.balance)} tone="safe" />
-        <StatCard
-          label={`🛒 ${t("salesToday")}`}
-          value={money(m.salesTodayTotal)}
-          hint={`${m.salesToday.length} venda(s)`}
-        />
-        <StatCard label={`💸 ${t("expensesToday")}`} value={money(m.expensesTodayTotal)} tone="danger" />
-        <StatCard label={`📦 ${t("stockValue")}`} value={money(m.stockValue)} />
-        <StatCard
-          label={`📈 ${t("profit")}`}
-          value={money(m.profit)}
-          tone={m.profit >= 0 ? "safe" : "danger"}
-        />
-        <StatCard label={`🧾 ${t("salesCount")}`} value={String(m.salesToday.length)} />
-        <StatCard label={`🛍️ ${t("purchasesToday")}`} value={money(m.purchasesTodayTotal)} />
-        <StatCard
-          label="Estado da caixa"
-          value={state.cashOpen ? "CAIXA ABERTA" : "CAIXA FECHADA"}
-          tone={state.cashOpen ? "safe" : "warning"}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SectionCard title="Vendas por hora" description="Movimento de vendas de hoje">
-          {m.salesTodayTotal === 0 ? (
-            <EmptyState message="Ainda não há vendas registadas hoje." />
-          ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={m.salesByHour}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-                <XAxis dataKey="hour" stroke="var(--color-muted-foreground)" fontSize={11} />
-                <YAxis stroke="var(--color-muted-foreground)" fontSize={11} />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--color-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 12,
-                  }}
-                />
-                <Line type="monotone" dataKey="total" stroke="var(--color-primary)" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Entradas x Saídas" description="Dinheiro recebido e dinheiro gasto hoje">
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={flowChart}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-              <XAxis dataKey="name" stroke="var(--color-muted-foreground)" fontSize={11} />
-              <YAxis stroke="var(--color-muted-foreground)" fontSize={11} />
-              <Tooltip
-                contentStyle={{
-                  background: "var(--color-card)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: 12,
-                }}
-              />
-              <Legend />
-              <Bar dataKey="Entradas" fill="var(--color-safe)" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="Saidas" fill="var(--color-danger)" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </SectionCard>
-
-        <SectionCard title="Produtos mais vendidos" description="Ranking por quantidade">
-          {m.productRanking.length === 0 ? (
-            <EmptyState message="Sem vendas suficientes para gerar o ranking." />
-          ) : (
-            <ul className="space-y-2">
-              {m.productRanking.slice(0, 6).map((p, i) => (
-                <li
-                  key={p.name}
-                  className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-sm"
-                >
-                  <span className="font-medium">
-                    {i + 1}. {p.name}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {p.qty} un · {money(p.total)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Situação do stock" description="Produtos por estado de inventário">
-          {stockChart.length === 0 ? (
-            <EmptyState
-              message="Cadastre produtos para acompanhar o stock."
-              action={
-                <Button asChild size="sm">
-                  <Link to="/produtos">Cadastrar produtos</Link>
-                </Button>
-              }
-            />
-          ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie data={stockChart} dataKey="value" nameKey="name" innerRadius={55} outerRadius={90}>
-                  {stockChart.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Legend />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--color-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 12,
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </SectionCard>
-      </div>
-
-      <SectionCard title="Histórico recente" description="Últimas operações registadas no sistema">
-        {state.auditLogs.length === 0 ? (
-          <EmptyState message="Nenhuma operação registada ainda." />
-        ) : (
-          <ul className="space-y-2 text-sm">
-            {state.auditLogs.slice(0, 8).map((l) => (
-              <li key={l.id} className="flex flex-wrap justify-between gap-2 border-b border-border pb-2">
-                <span>
-                  {new Date(l.date).toLocaleString("pt-PT")} — {l.operation} — {l.detail}
-                </span>
-                {l.amount ? <span className="font-medium">{money(l.amount)}</span> : null}
-              </li>
-            ))}
-          </ul>
-        )}
-      </SectionCard>
-
-      <Dialog open={confirmClose} onOpenChange={setConfirmClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Resumo do dia</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-1 text-sm">
-            <Row label="Total de vendas" value={money(m.salesTodayTotal)} />
-            <Row label="Total de despesas" value={money(m.expensesTodayTotal)} />
-            <Row label="Total de compras" value={money(m.purchasesTodayTotal)} />
-            <Row label="Saldo esperado" value={money(m.balance)} />
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
+          <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
+            <ChefHat className="size-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-display text-base font-bold">{name}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {est.type || "Restaurante & Bar"}
+            </p>
           </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setConfirmClose(false)}>
-              Cancelar
+          <nav className="hidden items-center gap-1 sm:flex">
+            <Button asChild variant="ghost" size="sm">
+              <a href="#menu">Menu</a>
             </Button>
-            <Button
-              onClick={() => {
-                closeDay();
-                setConfirmClose(false);
-                toast.success("Dia fechado com sucesso.");
-              }}
-            >
-              Fechar dia
+            <Button asChild variant="ghost" size="sm">
+              <a href="#contactos">Contactos</a>
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </AppShell>
-  );
-}
+          </nav>
+          <Button asChild size="sm">
+            <Link to="/menu">
+              Pedir agora <ArrowRight className="ml-1 size-4" />
+            </Link>
+          </Button>
+        </div>
+      </header>
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between border-b border-border py-1.5">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+      <main>
+        <section className="border-b border-border bg-gradient-to-b from-primary/10 to-transparent">
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 md:grid-cols-2 md:items-center md:py-24">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                <Sparkles className="size-3.5" /> Pedidos e reservas online
+              </span>
+              <h1 className="mt-4 font-display text-4xl font-bold leading-tight md:text-5xl">
+                Sabor de casa, servido do jeito que você gosta
+              </h1>
+              <p className="mt-4 max-w-prose text-muted-foreground">
+                Veja o nosso menu, faça o pedido pelo telefone ou computador e reserve a sua mesa.
+                Pague por M-Pesa, e-Mola, cartão ou em dinheiro.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button asChild size="lg">
+                  <Link to="/menu">
+                    <ShoppingBag className="mr-2 size-4" /> Ver menu e pedir
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/menu">
+                    <CalendarCheck className="mr-2 size-4" /> Reservar mesa
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                { icon: UtensilsCrossed, t: "Menu digital", d: "Pratos e bebidas sempre actualizados." },
+                { icon: CalendarCheck, t: "Reservas fáceis", d: "Escolha data, hora e número de pessoas." },
+                { icon: ShoppingBag, t: "Pedidos online", d: "Para a mesa, take-away ou entrega." },
+                { icon: Clock, t: "Atendimento rápido", d: "A equipa recebe o pedido na hora." },
+              ].map((f) => (
+                <div key={f.t} className="rounded-2xl border border-border bg-card p-5">
+                  <f.icon className="size-5 text-primary" />
+                  <p className="mt-3 font-semibold">{f.t}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="menu" className="mx-auto max-w-6xl px-4 py-16">
+          <h2 className="font-display text-3xl font-bold">Destaques do menu</h2>
+          <p className="mt-2 text-muted-foreground">Uma amostra do que servimos hoje.</p>
+
+          {hydrated && destaques.length > 0 ? (
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {destaques.map((p) => (
+                <div key={p.id} className="rounded-2xl border border-border bg-card p-5">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {p.category}
+                  </p>
+                  <p className="mt-1 font-semibold">{p.name}</p>
+                  {p.description ? (
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                      {p.description}
+                    </p>
+                  ) : null}
+                  <p className="mt-3 font-display text-lg font-bold text-primary">
+                    {money(p.salePrice)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-8 rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              O menu completo está disponível na área de pedidos.
+            </p>
+          )}
+
+          <div className="mt-8">
+            <Button asChild>
+              <Link to="/menu">
+                Ver menu completo <ArrowRight className="ml-1 size-4" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+
+        <section id="contactos" className="border-t border-border bg-card/40">
+          <div className="mx-auto grid max-w-6xl gap-6 px-4 py-16 md:grid-cols-3">
+            <div>
+              <MapPin className="size-5 text-primary" />
+              <p className="mt-3 font-semibold">Onde estamos</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {[est.address, est.city, est.country].filter(Boolean).join(", ") ||
+                  "Endereço por definir nas configurações."}
+              </p>
+            </div>
+            <div>
+              <Phone className="size-5 text-primary" />
+              <p className="mt-3 font-semibold">Contacto</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {est.phone || "Telefone por definir"}
+                {est.email ? ` · ${est.email}` : ""}
+              </p>
+            </div>
+            <div>
+              <Clock className="size-5 text-primary" />
+              <p className="mt-3 font-semibold">Horário</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Todos os dias · 08:00 às 23:00
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-muted-foreground">
+          <p>
+            © {new Date().getFullYear()} {name}
+          </p>
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/app">
+              <LayoutDashboard className="mr-2 size-4" /> Área da equipa
+            </Link>
+          </Button>
+        </div>
+      </footer>
     </div>
   );
 }

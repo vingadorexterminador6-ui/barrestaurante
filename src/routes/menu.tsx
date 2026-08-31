@@ -68,7 +68,7 @@ function CustomerArea() {
             </p>
           </div>
           <Button asChild variant="outline" size="sm">
-            <Link to="/">Área da equipa</Link>
+            <Link to="/app">Área da equipa</Link>
           </Button>
         </div>
       </header>
