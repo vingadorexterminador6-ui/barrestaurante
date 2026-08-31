@@ -72,6 +72,7 @@ export interface Expense {
   amount: number;
   paymentMethod: string;
   note?: string | undefined;
+  employeeId?: string | undefined;
 }
 
 export interface Income {
@@ -242,6 +243,7 @@ export interface CustomerOrder {
   paymentStatus: PaymentStatus;
   paymentMethod?: string | undefined;
   paymentRef?: string | undefined;
+  prepaidAmount?: number | undefined;
   saleId?: string | undefined;
 }
 

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Banknote, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -63,9 +63,38 @@ const empty = {
 };
 
 function EmployeesPage() {
-  const { state, money, saveEmployee, deleteEmployee } = useStore();
+  const { state, money, saveEmployee, deleteEmployee, payEmployee } = useStore();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
+  const [pay, setPay] = useState<{ open: boolean; id: string; name: string }>({
+    open: false,
+    id: "",
+    name: "",
+  });
+  const [payAmount, setPayAmount] = useState("");
+  const [payMethod, setPayMethod] = useState(state.settings.paymentMethods[0] ?? "Dinheiro");
+  const [payNote, setPayNote] = useState("");
+
+  const paidOf = (id: string) =>
+    state.expenses.filter((e) => e.employeeId === id).reduce((a, e) => a + e.amount, 0);
+
+  const submitPay = () => {
+    const value = Number(payAmount);
+    if (!value || value <= 0) {
+      toast.error("Informe um valor maior que zero.");
+      return;
+    }
+    payEmployee({
+      employeeId: pay.id,
+      amount: value,
+      paymentMethod: payMethod,
+      ...(payNote ? { note: payNote } : {}),
+    });
+    setPay({ open: false, id: "", name: "" });
+    setPayAmount("");
+    setPayNote("");
+    toast.success("Pagamento registado como saída no caixa.");
+  };
 
   const salesOf = (id: string) => {
     const sales = state.sales.filter((s) => s.employeeId === id);
@@ -116,6 +145,17 @@ function EmployeesPage() {
                     <Button
                       size="icon"
                       variant="ghost"
+                      title="Pagar salário"
+                      onClick={() => {
+                        setPay({ open: true, id: e.id, name: e.name });
+                        setPayAmount(String(e.salary || ""));
+                      }}
+                    >
+                      <Banknote className="size-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
                       onClick={() => {
                         setForm({ ...e, note: e.note ?? "" });
                         setOpen(true);
@@ -144,12 +184,60 @@ function EmployeesPage() {
                   <Badge variant="outline">
                     {s.count} venda(s) · {money(s.total)}
                   </Badge>
+                  <Badge variant="outline">Pago {money(paidOf(e.id))}</Badge>
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      <Dialog open={pay.open} onOpenChange={(v) => setPay((d) => ({ ...d, open: v }))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pagar {pay.name}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Valor *</Label>
+              <Input
+                type="number"
+                min="0"
+                value={payAmount}
+                onChange={(e) => setPayAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Forma de pagamento</Label>
+              <Select value={payMethod} onValueChange={setPayMethod}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {state.settings.paymentMethods.map((pm) => (
+                    <SelectItem key={pm} value={pm}>
+                      {pm}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Observação</Label>
+              <Textarea value={payNote} onChange={(e) => setPayNote(e.target.value)} />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              O pagamento é registado como despesa de salários e sai automaticamente do caixa.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setPay({ open: false, id: "", name: "" })}>
+              Cancelar
+            </Button>
+            <Button onClick={submitPay}>Registar pagamento</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
