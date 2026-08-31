@@ -206,6 +206,75 @@ function CashPage() {
         )}
       </SectionCard>
 
+      <SectionCard
+        title="Fecho semanal e mensal"
+        description="Resumo automático das entradas, saídas e resultado do período"
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                const c = closePeriod("semanal");
+                toast.success(`Fecho semanal concluído. Resultado: ${money(c.result)}`);
+              }}
+            >
+              Fecho semanal
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                const c = closePeriod("mensal");
+                toast.success(`Fecho mensal concluído. Resultado: ${money(c.result)}`);
+              }}
+            >
+              Fecho mensal
+            </Button>
+          </div>
+        }
+      >
+        {state.periodClosings.length === 0 ? (
+          <EmptyState message="Nenhum fecho semanal ou mensal registado." />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
+                  <th className="py-2">Período</th>
+                  <th className="py-2">Intervalo</th>
+                  <th className="py-2 text-right">Vendas</th>
+                  <th className="py-2 text-right">Entradas</th>
+                  <th className="py-2 text-right">Saídas</th>
+                  <th className="py-2 text-right">Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {state.periodClosings.map((c) => (
+                  <tr key={c.id} className="border-b border-border/60">
+                    <td className="py-2 capitalize">
+                      {c.period === "semanal" ? "Semanal" : "Mensal"} — {c.label}
+                    </td>
+                    <td className="py-2">
+                      {new Date(c.startDate).toLocaleDateString("pt-PT")} a{" "}
+                      {new Date(c.endDate).toLocaleDateString("pt-PT")}
+                    </td>
+                    <td className="py-2 text-right">{money(c.salesTotal)}</td>
+                    <td className="py-2 text-right text-safe">{money(c.inflowsTotal)}</td>
+                    <td className="py-2 text-right text-danger">{money(c.outflowsTotal)}</td>
+                    <td
+                      className={`py-2 text-right font-medium ${
+                        c.result >= 0 ? "text-safe" : "text-danger"
+                      }`}
+                    >
+                      {money(c.result)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SectionCard>
+
       <SectionCard title="Histórico de movimentos" description="Entradas e saídas registadas">
         {state.cashMovements.length === 0 ? (
           <EmptyState message="Nenhum movimento de caixa registado." />
