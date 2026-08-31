@@ -183,6 +183,12 @@ interface StoreValue {
   deleteCustomer: (id: string) => void;
   saveEmployee: (e: Omit<Employee, "id"> & { id?: string | undefined }) => void;
   deleteEmployee: (id: string) => void;
+  payEmployee: (input: {
+    employeeId: string;
+    amount: number;
+    paymentMethod: string;
+    note?: string | undefined;
+  }) => void;
   // tables
   saveTable: (t: { id?: string | undefined; name: string; area: string }) => void;
   deleteTable: (id: string) => void;
@@ -504,6 +510,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           );
         }),
 
+      payEmployee: ({ employeeId, amount, paymentMethod, note }) =>
+        patch((s) => {
+          const employee = s.employees.find((e) => e.id === employeeId);
+          if (!employee || amount <= 0) return s;
+          const expense: Expense = {
+            id: uid(),
+            date: now(),
+            category: "Salários",
+            description: `Pagamento a ${employee.name} (${employee.role})`,
+            amount,
+            paymentMethod,
+            employeeId,
+            ...(note ? { note } : {}),
+          };
+          const cash: CashMovement = {
+            id: uid(),
+            date: expense.date,
+            type: "saida",
+            amount,
+            category: "Despesa: Salários",
+            description: expense.description,
+            paymentMethod,
+            refId: expense.id,
+          };
+          return log(
+            {
+              ...s,
+              expenses: [expense, ...s.expenses],
+              cashMovements: [cash, ...s.cashMovements],
+            },
+            "Pagamento de funcionário",
+            expense.description,
+            amount,
+          );
+        }),
+
       addPurchase: ({ supplierId, supplierName, items, paymentMethod, note }) =>
         patch((s) => {
           const total = items.reduce((acc, i) => acc + i.subtotal, 0);
@@ -691,10 +733,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           paymentStatus: paymentMethod ? "declarado" : "pendente",
           paymentMethod,
           paymentRef,
+          ...(paymentMethod ? { prepaidAmount: total } : {}),
         };
-        patch((s) =>
-          log({ ...s, orders: [order, ...s.orders] }, "Pedido do cliente", `${order.code} — ${customerName}`, total),
-        );
+        patch((s) => {
+          const prepay: CashMovement[] = paymentMethod
+            ? [
+                {
+                  id: uid(),
+                  date: order.date,
+                  type: "entrada",
+                  amount: total,
+                  category: "Pré-pagamento",
+                  description: `Pedido ${order.code} — ${customerName}${paymentRef ? ` (ref. ${paymentRef})` : ""}`,
+                  paymentMethod,
+                  refId: order.id,
+                },
+              ]
+            : [];
+          return log(
+            { ...s, orders: [order, ...s.orders], cashMovements: [...prepay, ...s.cashMovements] },
+            paymentMethod ? "Pedido pré-pago" : "Pedido do cliente",
+            `${order.code} — ${customerName}`,
+            total,
+          );
+        });
         return order;
       },
       setOrderStatus: (id, status) =>
@@ -749,23 +811,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             });
             return { ...p, stock: Math.max(0, p.stock - item.qty) };
           });
-          const cash: CashMovement = {
-            id: uid(),
-            date: sale.date,
-            type: "entrada",
-            amount: order.total,
-            category: "Venda",
-            description: `Pedido ${order.code} — ${order.customerName}`,
-            paymentMethod,
-            refId: sale.id,
-          };
+          const remaining = Math.max(0, order.total - (order.prepaidAmount ?? 0));
+          const cashEntries: CashMovement[] =
+            remaining > 0
+              ? [
+                  {
+                    id: uid(),
+                    date: sale.date,
+                    type: "entrada",
+                    amount: remaining,
+                    category: "Venda",
+                    description: `Pedido ${order.code} — ${order.customerName}`,
+                    paymentMethod,
+                    refId: sale.id,
+                  },
+                ]
+              : [];
           return log(
             {
               ...s,
               sales: [sale, ...s.sales],
               products,
               inventoryMovements: [...inv, ...s.inventoryMovements],
-              cashMovements: [cash, ...s.cashMovements],
+              cashMovements: [...cashEntries, ...s.cashMovements],
               tables: order.tableId
                 ? s.tables.map((tb) =>
                     tb.id === order.tableId
