@@ -15,7 +15,9 @@ import type {
   CashType,
   Customer,
   CustomerOrder,
+  ClosingPeriod,
   DailyClosing,
+  PeriodClosing,
   Employee,
   Expense,
   Income,
@@ -91,6 +93,7 @@ export const defaultState = (): AppState => ({
   cashMovements: [],
   inventoryMovements: [],
   dailyClosings: [],
+  periodClosings: [],
   auditLogs: [],
   orders: [],
   reservations: [],
@@ -227,6 +230,7 @@ interface StoreValue {
   ) => void;
   // closing
   closeDay: () => DailyClosing | null;
+  closePeriod: (period: ClosingPeriod) => PeriodClosing;
   // data
   exportBackup: () => void;
   importBackup: (json: string) => boolean;
@@ -940,6 +944,67 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         );
         return closing;
       },
+
+      closePeriod: (period) => {
+        const ref = new Date();
+        let start: Date;
+        let end: Date;
+        if (period === "semanal") {
+          const day = ref.getDay();
+          const diff = day === 0 ? 6 : day - 1; // semana começa na segunda
+          start = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate() - diff);
+          end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 7);
+        } else {
+          start = new Date(ref.getFullYear(), ref.getMonth(), 1);
+          end = new Date(ref.getFullYear(), ref.getMonth() + 1, 1);
+        }
+        const inRange = (iso: string) => {
+          const d = new Date(iso);
+          return d >= start && d < end;
+        };
+        const movements = state.cashMovements.filter((m) => inRange(m.date));
+        const sales = state.sales.filter((x) => inRange(x.date));
+        const inflowsTotal = movements
+          .filter((m) => m.type === "entrada")
+          .reduce((a, m) => a + m.amount, 0);
+        const outflowsTotal = movements
+          .filter((m) => m.type === "saida")
+          .reduce((a, m) => a + m.amount, 0);
+        const closing: PeriodClosing = {
+          id: uid(),
+          period,
+          date: now(),
+          startDate: start.toISOString(),
+          endDate: new Date(end.getTime() - 1).toISOString(),
+          label:
+            period === "semanal"
+              ? `Semana de ${start.toLocaleDateString("pt-PT")}`
+              : start.toLocaleDateString("pt-PT", { month: "long", year: "numeric" }),
+          salesTotal: sales.reduce((a, x) => a + x.total, 0),
+          otherIncome: state.incomes.filter((x) => inRange(x.date)).reduce((a, x) => a + x.amount, 0),
+          expensesTotal: state.expenses
+            .filter((x) => inRange(x.date))
+            .reduce((a, x) => a + x.amount, 0),
+          purchasesTotal: state.purchases
+            .filter((x) => inRange(x.date))
+            .reduce((a, x) => a + x.total, 0),
+          inflowsTotal,
+          outflowsTotal,
+          result: inflowsTotal - outflowsTotal,
+          salesCount: sales.length,
+        };
+        patch((s) =>
+          log(
+            { ...s, periodClosings: [closing, ...s.periodClosings] },
+            period === "semanal" ? "Fecho semanal" : "Fecho mensal",
+            closing.label,
+            closing.result,
+          ),
+        );
+        return closing;
+      },
+
+
 
       exportBackup: () => {
         const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
