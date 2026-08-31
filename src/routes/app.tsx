@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { useMetrics, useStore } from "@/lib/gestao/store";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/app")({
   head: () => ({
     meta: [
       { title: "Dashboard — Gestão de Bar e Restaurante" },
