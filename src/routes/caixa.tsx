@@ -56,7 +56,7 @@ const OPERATIONS: { key: string; label: string; type: CashType }[] = [
 ];
 
 function CashPage() {
-  const { state, money, openCash, closeCash, addCashMovement } = useStore();
+  const { state, money, openCash, closeCash, addCashMovement, closeDay } = useStore();
   const m = useMetrics();
   const [dialog, setDialog] = useState<{ open: boolean; operation: string; type: CashType }>({
     open: false,
@@ -150,6 +150,60 @@ function CashPage() {
             Abra a caixa para registar movimentos e vendas.
           </p>
         ) : null}
+      </SectionCard>
+
+      <SectionCard
+        title="Fecho diário"
+        description="Fecha o dia e calcula automaticamente entradas, saídas e resultado"
+        actions={
+          <Button
+            onClick={() => {
+              const c = closeDay();
+              if (c) toast.success(`Fecho diário concluído. Resultado: ${money(c.result)}`);
+            }}
+          >
+            Fazer fecho diário
+          </Button>
+        }
+      >
+        {state.dailyClosings.length === 0 ? (
+          <EmptyState message="Nenhum fecho diário registado." />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px] text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
+                  <th className="py-2">Data</th>
+                  <th className="py-2 text-right">Abertura</th>
+                  <th className="py-2 text-right">Vendas</th>
+                  <th className="py-2 text-right">Outras entradas</th>
+                  <th className="py-2 text-right">Saídas</th>
+                  <th className="py-2 text-right">Saldo final</th>
+                  <th className="py-2 text-right">Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {state.dailyClosings.map((c) => (
+                  <tr key={c.id} className="border-b border-border/60">
+                    <td className="py-2">{new Date(c.date).toLocaleString("pt-PT")}</td>
+                    <td className="py-2 text-right">{money(c.openingBalance)}</td>
+                    <td className="py-2 text-right">{money(c.salesTotal)}</td>
+                    <td className="py-2 text-right">{money(c.otherIncome)}</td>
+                    <td className="py-2 text-right text-danger">{money(c.outflowsTotal)}</td>
+                    <td className="py-2 text-right">{money(c.expectedBalance)}</td>
+                    <td
+                      className={`py-2 text-right font-medium ${
+                        c.result >= 0 ? "text-safe" : "text-danger"
+                      }`}
+                    >
+                      {money(c.result)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </SectionCard>
 
       <SectionCard title="Histórico de movimentos" description="Entradas e saídas registadas">
