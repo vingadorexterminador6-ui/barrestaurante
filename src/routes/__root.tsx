@@ -135,16 +135,17 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 /**
- * Ao recarregar/atualizar o sistema, volta sempre ao painel inicial.
- * A área do cliente (/menu) mantém-se, para não quebrar links partilhados.
+ * Ao recarregar/atualizar, a área de gestão volta sempre ao painel inicial (/app).
+ * O website público (/) e a área do cliente (/menu) mantêm-se.
  */
 function ResetToHomeOnReload() {
   const router = useRouter();
 
   useEffect(() => {
     const path = window.location.pathname;
-    if (path !== "/" && !path.startsWith("/menu") && !path.startsWith("/conversa")) {
-      void router.navigate({ to: "/", replace: true });
+    const publicPaths = path === "/" || path.startsWith("/menu") || path.startsWith("/conversa");
+    if (!publicPaths && path !== "/app") {
+      void router.navigate({ to: "/app", replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
