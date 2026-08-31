@@ -12,6 +12,7 @@ import {
   Moon,
   Package,
   Receipt,
+  RefreshCw,
   Search,
   Settings,
   ShoppingBag,
@@ -295,6 +296,15 @@ export function AppShell({ title, subtitle, actions, children }: {
           <div className="flex items-center gap-2">
             <GlobalSearch />
             <Notifications />
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Actualizar sistema"
+              onClick={() => window.location.reload()}
+            >
+              <RefreshCw className="size-4" />
+              <span className="sr-only">Actualizar</span>
+            </Button>
             <Button
               variant="ghost"
               size="icon"
