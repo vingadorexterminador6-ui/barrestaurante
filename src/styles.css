@@ -192,3 +192,35 @@
     radial-gradient(40% 40% at 85% 20%, color-mix(in oklab, var(--color-safe) 12%, transparent), transparent);
 }
 
+
+/* Conversa Quente AI — tema escuro elegante com detalhes vermelho/rosa */
+.conversa-theme {
+  --radius: 1.25rem;
+  --background: oklch(0.15 0.02 350);
+  --foreground: oklch(0.97 0.01 340);
+  --card: oklch(0.2 0.03 348);
+  --card-foreground: oklch(0.97 0.01 340);
+  --popover: oklch(0.2 0.03 348);
+  --popover-foreground: oklch(0.97 0.01 340);
+  --primary: oklch(0.63 0.24 12);
+  --primary-foreground: oklch(0.99 0.005 340);
+  --secondary: oklch(0.27 0.04 350);
+  --secondary-foreground: oklch(0.97 0.01 340);
+  --muted: oklch(0.25 0.03 350);
+  --muted-foreground: oklch(0.74 0.03 345);
+  --accent: oklch(0.35 0.09 352);
+  --accent-foreground: oklch(0.98 0.01 340);
+  --destructive: oklch(0.6 0.22 22);
+  --destructive-foreground: oklch(0.99 0.005 340);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.63 0.24 12);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+@utility heat-glow {
+  background-image:
+    radial-gradient(70% 55% at 50% 0%, color-mix(in oklab, var(--color-primary) 30%, transparent), transparent),
+    radial-gradient(50% 40% at 90% 15%, color-mix(in oklab, oklch(0.7 0.2 340) 20%, transparent), transparent);
+}
