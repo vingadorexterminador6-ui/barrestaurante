@@ -14,6 +14,7 @@ import { Route as CaixaRouteImport } from './routes/caixa'
 import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as EntradasRouteImport } from './routes/entradas'
 import { Route as FornecedoresRouteImport } from './routes/fornecedores'
@@ -50,6 +51,11 @@ const ComprasRoute = ComprasRouteImport.update({
 const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   id: '/configuracoes',
   path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConversaRoute = ConversaRouteImport.update({
+  id: '/conversa',
+  path: '/conversa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DespesasRoute = DespesasRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/conversa': typeof ConversaRoute
   '/despesas': typeof DespesasRoute
   '/entradas': typeof EntradasRoute
   '/fornecedores': typeof FornecedoresRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/conversa': typeof ConversaRoute
   '/despesas': typeof DespesasRoute
   '/entradas': typeof EntradasRoute
   '/fornecedores': typeof FornecedoresRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/conversa': typeof ConversaRoute
   '/despesas': typeof DespesasRoute
   '/entradas': typeof EntradasRoute
   '/fornecedores': typeof FornecedoresRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/compras'
     | '/configuracoes'
+    | '/conversa'
     | '/despesas'
     | '/entradas'
     | '/fornecedores'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/compras'
     | '/configuracoes'
+    | '/conversa'
     | '/despesas'
     | '/entradas'
     | '/fornecedores'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/compras'
     | '/configuracoes'
+    | '/conversa'
     | '/despesas'
     | '/entradas'
     | '/fornecedores'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   ClientesRoute: typeof ClientesRoute
   ComprasRoute: typeof ComprasRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
+  ConversaRoute: typeof ConversaRoute
   DespesasRoute: typeof DespesasRoute
   EntradasRoute: typeof EntradasRoute
   FornecedoresRoute: typeof FornecedoresRoute
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/configuracoes'
       fullPath: '/configuracoes'
       preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conversa': {
+      id: '/conversa'
+      path: '/conversa'
+      fullPath: '/conversa'
+      preLoaderRoute: typeof ConversaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/despesas': {
@@ -381,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientesRoute: ClientesRoute,
   ComprasRoute: ComprasRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
+  ConversaRoute: ConversaRoute,
   DespesasRoute: DespesasRoute,
   EntradasRoute: EntradasRoute,
   FornecedoresRoute: FornecedoresRoute,
