@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as CaixaRouteImport } from './routes/caixa'
 import { Route as ClientesRouteImport } from './routes/clientes'
@@ -28,6 +29,11 @@ import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as StockRouteImport } from './routes/stock'
 import { Route as VendasRouteImport } from './routes/vendas'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -120,6 +126,7 @@ const VendasRoute = VendasRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/app': typeof AppRoute
   '/caixa': typeof CaixaRoute
   '/clientes': typeof ClientesRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/vendas': typeof VendasRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/app': typeof AppRoute
   '/caixa': typeof CaixaRoute
   '/clientes': typeof ClientesRoute
@@ -161,6 +169,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/app': typeof AppRoute
   '/caixa': typeof CaixaRoute
   '/clientes': typeof ClientesRoute
@@ -183,6 +192,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/app'
     | '/caixa'
     | '/clientes'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/vendas'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/app'
     | '/caixa'
     | '/clientes'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/vendas'
   id:
     | '__root__'
+    | '/'
     | '/app'
     | '/caixa'
     | '/clientes'
@@ -244,6 +256,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRoute
   CaixaRoute: typeof CaixaRoute
   ClientesRoute: typeof ClientesRoute
@@ -266,6 +279,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -396,6 +416,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AppRoute: AppRoute,
   CaixaRoute: CaixaRoute,
   ClientesRoute: ClientesRoute,
