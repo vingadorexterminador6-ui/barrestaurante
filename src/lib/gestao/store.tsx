@@ -230,6 +230,7 @@ interface StoreValue {
   ) => void;
   // closing
   closeDay: () => DailyClosing | null;
+  closePeriod: (period: ClosingPeriod) => PeriodClosing;
   // data
   exportBackup: () => void;
   importBackup: (json: string) => boolean;
