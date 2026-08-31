@@ -36,7 +36,7 @@ import { useMetrics, useStore } from "@/lib/gestao/store";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", key: "dashboard", icon: LayoutDashboard },
+  { to: "/app", key: "dashboard", icon: LayoutDashboard },
   { to: "/vendas", key: "sales", icon: ShoppingCart },
   { to: "/mesas", key: "tables", icon: UtensilsCrossed },
   { to: "/pedidos", key: "orders", icon: ClipboardList },

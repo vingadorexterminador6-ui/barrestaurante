@@ -90,7 +90,7 @@ export function RequireSetup({ children }: { children: ReactNode }) {
         message="Configure primeiro o seu estabelecimento para começar a usar este módulo."
         action={
           <Button asChild>
-            <Link to="/">Ir para a configuração</Link>
+            <Link to="/app">Ir para a configuração</Link>
           </Button>
         }
       />
