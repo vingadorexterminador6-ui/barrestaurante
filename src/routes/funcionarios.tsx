@@ -78,6 +78,17 @@ function EmployeesPage() {
   const paidOf = (id: string) =>
     state.expenses.filter((e) => e.employeeId === id).reduce((a, e) => a + e.amount, 0);
 
+  const monthKey = new Date().toISOString().slice(0, 7);
+  const paidThisMonth = (id: string) =>
+    state.expenses
+      .filter((e) => e.employeeId === id && String(e.date).slice(0, 7) === monthKey)
+      .reduce((a, e) => a + e.amount, 0);
+  const monthLabel = (iso: string) =>
+    iso
+      ? new Date(iso).toLocaleDateString("pt-PT", { month: "long", year: "numeric" })
+      : "—";
+
+
   const submitPay = () => {
     const value = Number(payAmount);
     if (!value || value <= 0) {
@@ -148,8 +159,10 @@ function EmployeesPage() {
                       title="Pagar salário"
                       onClick={() => {
                         setPay({ open: true, id: e.id, name: e.name });
-                        setPayAmount(String(e.salary || ""));
+                        const remaining = Math.max(0, e.salary - paidThisMonth(e.id));
+                        setPayAmount(String(remaining || e.salary || ""));
                       }}
+
                     >
                       <Banknote className="size-4" />
                     </Button>
@@ -181,11 +194,19 @@ function EmployeesPage() {
                     {e.active ? "Ativo" : "Inativo"}
                   </Badge>
                   <Badge variant="outline">Salário {money(e.salary)}</Badge>
+                  <Badge variant="outline">Entrou em {monthLabel(e.hiredAt)}</Badge>
                   <Badge variant="outline">
                     {s.count} venda(s) · {money(s.total)}
                   </Badge>
-                  <Badge variant="outline">Pago {money(paidOf(e.id))}</Badge>
+                  <Badge variant="outline">Pago no mês {money(paidThisMonth(e.id))}</Badge>
+                  <Badge
+                    variant={e.salary - paidThisMonth(e.id) > 0 ? "secondary" : "outline"}
+                  >
+                    Falta {money(Math.max(0, e.salary - paidThisMonth(e.id)))}
+                  </Badge>
+                  <Badge variant="outline">Total pago {money(paidOf(e.id))}</Badge>
                 </div>
+
               </div>
             );
           })}
