@@ -128,12 +128,12 @@ function OrderTab() {
       state.products.filter(
         (p) =>
           p.active &&
-          p.stock > 0 &&
           (category === "Todas" || p.category === category) &&
           p.name.toLowerCase().includes(search.trim().toLowerCase()),
       ),
     [state.products, category, search],
   );
+
 
   const total = cart.reduce((a, i) => a + i.subtotal, 0);
 
