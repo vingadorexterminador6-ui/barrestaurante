@@ -228,18 +228,23 @@ function OrderTab() {
                 <button
                   key={p.id}
                   type="button"
+                  disabled={p.stock <= 0}
                   onClick={() => add(p.id)}
-                  className="rounded-xl border border-border p-3 text-left transition-colors hover:border-primary hover:bg-accent/50"
+                  className="rounded-xl border border-border p-3 text-left transition-colors hover:border-primary hover:bg-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <p className="truncate text-sm font-medium">{p.name}</p>
                   {p.description ? (
                     <p className="truncate text-xs text-muted-foreground">{p.description}</p>
                   ) : null}
                   <p className="mt-1 font-display text-base">{money(p.salePrice)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {p.stock > 0 ? `${p.category} · disponível` : "Esgotado"}
+                  </p>
                 </button>
               ))}
             </div>
           )}
+
         </CardContent>
       </Card>
 
