@@ -194,11 +194,19 @@ function EmployeesPage() {
                     {e.active ? "Ativo" : "Inativo"}
                   </Badge>
                   <Badge variant="outline">Salário {money(e.salary)}</Badge>
+                  <Badge variant="outline">Entrou em {monthLabel(e.hiredAt)}</Badge>
                   <Badge variant="outline">
                     {s.count} venda(s) · {money(s.total)}
                   </Badge>
-                  <Badge variant="outline">Pago {money(paidOf(e.id))}</Badge>
+                  <Badge variant="outline">Pago no mês {money(paidThisMonth(e.id))}</Badge>
+                  <Badge
+                    variant={e.salary - paidThisMonth(e.id) > 0 ? "secondary" : "outline"}
+                  >
+                    Falta {money(Math.max(0, e.salary - paidThisMonth(e.id)))}
+                  </Badge>
+                  <Badge variant="outline">Total pago {money(paidOf(e.id))}</Badge>
                 </div>
+
               </div>
             );
           })}
