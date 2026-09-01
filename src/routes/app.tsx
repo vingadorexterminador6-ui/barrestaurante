@@ -18,6 +18,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/gestao/AppShell";
+import { ClientAreaLink } from "@/components/gestao/ClientAreaLink";
+
 import { SetupWizard, Welcome } from "@/components/gestao/SetupWizard";
 import { EmptyState, SectionCard, StatCard } from "@/components/gestao/ui-bits";
 import { Button } from "@/components/ui/button";
@@ -113,8 +115,11 @@ function Dashboard() {
         </>
       }
     >
+      <ClientAreaLink />
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={`💰 ${t("balance")}`} value={money(m.balance)} tone="safe" />
+
         <StatCard
           label={`🛒 ${t("salesToday")}`}
           value={money(m.salesTodayTotal)}
