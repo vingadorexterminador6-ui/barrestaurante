@@ -104,8 +104,26 @@ function CashPage() {
         />
       </div>
 
+      <SectionCard title="Atalhos rápidos" description="Entradas, saídas e pagamentos de funcionários">
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline">
+            <Link to="/entradas">Registar entrada de valores</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/despesas">Registar saída / despesa</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/compras">Compras de produtos</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/funcionarios">Pagamento de funcionários</Link>
+          </Button>
+        </div>
+      </SectionCard>
+
       <SectionCard title="Operações de caixa" description="Todos os cálculos são automáticos">
         <div className="flex flex-wrap gap-2">
+
           {state.cashOpen ? (
             <Button variant="outline" onClick={() => { closeCash(); toast.success("Caixa fechada."); }}>
               Fechar caixa
