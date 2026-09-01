@@ -78,6 +78,17 @@ function EmployeesPage() {
   const paidOf = (id: string) =>
     state.expenses.filter((e) => e.employeeId === id).reduce((a, e) => a + e.amount, 0);
 
+  const monthKey = new Date().toISOString().slice(0, 7);
+  const paidThisMonth = (id: string) =>
+    state.expenses
+      .filter((e) => e.employeeId === id && String(e.date).slice(0, 7) === monthKey)
+      .reduce((a, e) => a + e.amount, 0);
+  const monthLabel = (iso: string) =>
+    iso
+      ? new Date(iso).toLocaleDateString("pt-PT", { month: "long", year: "numeric" })
+      : "—";
+
+
   const submitPay = () => {
     const value = Number(payAmount);
     if (!value || value <= 0) {
