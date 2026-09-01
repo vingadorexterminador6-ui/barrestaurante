@@ -159,8 +159,10 @@ function EmployeesPage() {
                       title="Pagar salário"
                       onClick={() => {
                         setPay({ open: true, id: e.id, name: e.name });
-                        setPayAmount(String(e.salary || ""));
+                        const remaining = Math.max(0, e.salary - paidThisMonth(e.id));
+                        setPayAmount(String(remaining || e.salary || ""));
                       }}
+
                     >
                       <Banknote className="size-4" />
                     </Button>
