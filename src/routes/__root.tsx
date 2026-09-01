@@ -143,12 +143,13 @@ function ResetToHomeOnReload() {
 
   useEffect(() => {
     const path = window.location.pathname;
-    const publicPaths = path === "/" || path.startsWith("/menu") || path.startsWith("/conversa");
-    if (!publicPaths && path !== "/app") {
-      void router.navigate({ to: "/app", replace: true });
+    const keep = path === "/" || path.startsWith("/menu") || path.startsWith("/conversa");
+    if (!keep) {
+      void router.navigate({ to: "/", replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   return null;
 }
