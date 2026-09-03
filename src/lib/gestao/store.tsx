@@ -1163,7 +1163,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       },
       clearAll: () => setState(defaultState()),
     };
-  }, [state, hydrated, patch]);
+  }, [state, hydrated, patch, sessionId]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
