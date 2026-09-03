@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as BensRouteImport } from './routes/bens'
 import { Route as CaixaRouteImport } from './routes/caixa'
+import { Route as ClienteRouteImport } from './routes/cliente'
 import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
@@ -48,6 +49,11 @@ const BensRoute = BensRouteImport.update({
 const CaixaRoute = CaixaRouteImport.update({
   id: '/caixa',
   path: '/caixa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClienteRoute = ClienteRouteImport.update({
+  id: '/cliente',
+  path: '/cliente',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientesRoute = ClientesRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/bens': typeof BensRoute
   '/caixa': typeof CaixaRoute
+  '/cliente': typeof ClienteRoute
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/bens': typeof BensRoute
   '/caixa': typeof CaixaRoute
+  '/cliente': typeof ClienteRoute
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/bens': typeof BensRoute
   '/caixa': typeof CaixaRoute
+  '/cliente': typeof ClienteRoute
   '/clientes': typeof ClientesRoute
   '/compras': typeof ComprasRoute
   '/configuracoes': typeof ConfiguracoesRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/bens'
     | '/caixa'
+    | '/cliente'
     | '/clientes'
     | '/compras'
     | '/configuracoes'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/bens'
     | '/caixa'
+    | '/cliente'
     | '/clientes'
     | '/compras'
     | '/configuracoes'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/bens'
     | '/caixa'
+    | '/cliente'
     | '/clientes'
     | '/compras'
     | '/configuracoes'
@@ -272,6 +284,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   BensRoute: typeof BensRoute
   CaixaRoute: typeof CaixaRoute
+  ClienteRoute: typeof ClienteRoute
   ClientesRoute: typeof ClientesRoute
   ComprasRoute: typeof ComprasRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       path: '/caixa'
       fullPath: '/caixa'
       preLoaderRoute: typeof CaixaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cliente': {
+      id: '/cliente'
+      path: '/cliente'
+      fullPath: '/cliente'
+      preLoaderRoute: typeof ClienteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clientes': {
@@ -440,6 +460,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   BensRoute: BensRoute,
   CaixaRoute: CaixaRoute,
+  ClienteRoute: ClienteRoute,
   ClientesRoute: ClientesRoute,
   ComprasRoute: ComprasRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
