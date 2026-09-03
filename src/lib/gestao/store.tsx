@@ -15,6 +15,7 @@ import type {
   CashMovement,
   CashType,
   Customer,
+  CustomerAccount,
   CustomerOrder,
   ClosingPeriod,
   DailyClosing,
@@ -40,6 +41,7 @@ import type {
 } from "./types";
 
 const STORAGE_KEY = "gestao-bar-restaurante-v1";
+const SESSION_KEY = "gestao-cliente-sessao-v1";
 
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const now = () => new Date().toISOString();
@@ -89,6 +91,7 @@ export const defaultState = (): AppState => ({
   purchases: [],
   suppliers: [],
   customers: [],
+  customerAccounts: [],
   employees: [],
   tables: [],
   cashMovements: [],
@@ -188,6 +191,16 @@ interface StoreValue {
   saveSupplier: (s: Omit<Supplier, "id"> & { id?: string | undefined }) => void;
   deleteSupplier: (id: string) => void;
   saveCustomer: (c: Omit<Customer, "id"> & { id?: string | undefined }) => void;
+  // área do cliente (login próprio)
+  customerSession: CustomerAccount | null;
+  registerCustomerAccount: (input: {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+  }) => { ok: boolean; error?: string };
+  loginCustomer: (email: string, password: string) => { ok: boolean; error?: string };
+  logoutCustomer: () => void;
   deleteCustomer: (id: string) => void;
   saveEmployee: (e: Omit<Employee, "id"> & { id?: string | undefined }) => void;
   deleteEmployee: (id: string) => void;
@@ -215,6 +228,7 @@ interface StoreValue {
     note?: string | undefined;
     paymentMethod?: string | undefined;
     paymentRef?: string | undefined;
+    accountId?: string | undefined;
   }) => CustomerOrder;
   setOrderStatus: (id: string, status: OrderStatus) => void;
   confirmOrderPayment: (id: string, paymentMethod: string) => void;
@@ -247,10 +261,23 @@ const StoreContext = createContext<StoreValue | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     setState(load());
+    setSessionId(window.localStorage.getItem(SESSION_KEY));
     setHydrated(true);
+  }, []);
+
+  // Sincroniza automaticamente entre separadores/dispositivos no mesmo browser,
+  // sem ser necessário recarregar a página.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) setState(load());
+      if (e.key === SESSION_KEY) setSessionId(e.newValue);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   useEffect(() => {
@@ -660,6 +687,57 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ),
       deleteCustomer: (id) =>
         patch((s) => ({ ...s, customers: s.customers.filter((x) => x.id !== id) })),
+      customerSession:
+        state.customerAccounts.find((a) => a.id === sessionId) ?? null,
+      registerCustomerAccount: ({ name, email, phone, password }) => {
+        const mail = email.trim().toLowerCase();
+        if (!name.trim()) return { ok: false, error: "Indique o seu nome." };
+        if (!mail.includes("@")) return { ok: false, error: "E-mail inválido." };
+        if (password.length < 6) return { ok: false, error: "A senha deve ter 6+ caracteres." };
+        if (state.customerAccounts.some((a) => a.email === mail))
+          return { ok: false, error: "Já existe uma conta com este e-mail." };
+        const account: CustomerAccount = {
+          id: uid(),
+          name: name.trim(),
+          email: mail,
+          phone: phone.trim(),
+          password,
+          createdAt: now(),
+        };
+        patch((s) => ({
+          ...s,
+          customerAccounts: [account, ...s.customerAccounts],
+          customers: s.customers.some((c) => c.email.toLowerCase() === mail)
+            ? s.customers
+            : [
+                {
+                  id: uid(),
+                  name: account.name,
+                  phone: account.phone,
+                  email: account.email,
+                  address: "",
+                },
+                ...s.customers,
+              ],
+        }));
+        window.localStorage.setItem(SESSION_KEY, account.id);
+        setSessionId(account.id);
+        return { ok: true };
+      },
+      loginCustomer: (email, password) => {
+        const mail = email.trim().toLowerCase();
+        const account = state.customerAccounts.find((a) => a.email === mail);
+        if (!account || account.password !== password)
+          return { ok: false, error: "E-mail ou senha incorretos." };
+        window.localStorage.setItem(SESSION_KEY, account.id);
+        setSessionId(account.id);
+        return { ok: true };
+      },
+      logoutCustomer: () => {
+        window.localStorage.removeItem(SESSION_KEY);
+        setSessionId(null);
+      },
+
       saveEmployee: (e) =>
         patch((s) =>
           e.id
@@ -751,9 +829,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ),
         })),
 
-      placeOrder: ({ customerName, phone, channel, tableId, items, note, paymentMethod, paymentRef }) => {
+      placeOrder: ({ customerName, phone, channel, tableId, items, note, paymentMethod, paymentRef, accountId }) => {
         const total = items.reduce((a, i) => a + i.subtotal, 0);
         const table = state.tables.find((tb) => tb.id === tableId);
+        const method = paymentMethod ?? "Dinheiro";
         const order: CustomerOrder = {
           id: uid(),
           code: `PD-${String(state.orders.length + 1).padStart(4, "0")}`,
@@ -770,25 +849,49 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           paymentStatus: paymentMethod ? "declarado" : "pendente",
           paymentMethod,
           paymentRef,
-          ...(paymentMethod ? { prepaidAmount: total } : {}),
+          prepaidAmount: total,
+          stockApplied: true,
+          accountId,
         };
         patch((s) => {
-          const prepay: CashMovement[] = paymentMethod
-            ? [
-                {
-                  id: uid(),
-                  date: order.date,
-                  type: "entrada",
-                  amount: total,
-                  category: "Pré-pagamento",
-                  description: `Pedido ${order.code} — ${customerName}${paymentRef ? ` (ref. ${paymentRef})` : ""}`,
-                  paymentMethod,
-                  refId: order.id,
-                },
-              ]
-            : [];
+          // Valor do pedido entra automaticamente na caixa
+          const cash: CashMovement[] = [
+            {
+              id: uid(),
+              date: order.date,
+              type: "entrada",
+              amount: total,
+              category: paymentMethod ? "Pré-pagamento" : "Pedido do cliente",
+              description: `Pedido ${order.code} — ${customerName}${paymentRef ? ` (ref. ${paymentRef})` : ""}`,
+              paymentMethod: method,
+              refId: order.id,
+            },
+          ];
+          // Stock atualizado automaticamente
+          const inv: InventoryMovement[] = [];
+          const products = s.products.map((p) => {
+            const item = items.find((i) => i.productId === p.id);
+            if (!item) return p;
+            inv.push({
+              id: uid(),
+              date: order.date,
+              productId: p.id,
+              productName: p.name,
+              type: "saida",
+              qty: item.qty,
+              reason: `Pedido ${order.code}`,
+              value: item.subtotal,
+            });
+            return { ...p, stock: Math.max(0, p.stock - item.qty) };
+          });
           return log(
-            { ...s, orders: [order, ...s.orders], cashMovements: [...prepay, ...s.cashMovements] },
+            {
+              ...s,
+              orders: [order, ...s.orders],
+              products,
+              inventoryMovements: [...inv, ...s.inventoryMovements],
+              cashMovements: [...cash, ...s.cashMovements],
+            },
             paymentMethod ? "Pedido pré-pago" : "Pedido do cliente",
             `${order.code} — ${customerName}`,
             total,
@@ -833,7 +936,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             tableId: order.tableId,
           };
           const inv: InventoryMovement[] = [];
-          const products = s.products.map((p) => {
+          const products = order.stockApplied ? s.products : s.products.map((p) => {
             const item = order.items.find((i) => i.productId === p.id);
             if (!item) return p;
             inv.push({
@@ -1060,7 +1163,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       },
       clearAll: () => setState(defaultState()),
     };
-  }, [state, hydrated, patch]);
+  }, [state, hydrated, patch, sessionId]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
