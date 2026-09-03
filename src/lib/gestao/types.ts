@@ -210,6 +210,23 @@ export interface PeriodClosing {
   salesCount: number;
 }
 
+export type AssetCondition = "novo" | "bom" | "usado" | "avariado" | "abatido";
+
+export interface Asset {
+  id: string;
+  name: string;
+  code: string;
+  category: string;
+  location: string;
+  qty: number;
+  value: number;
+  acquiredAt: string;
+  condition: AssetCondition;
+  supplierId?: string | undefined;
+  responsibleId?: string | undefined;
+  note?: string | undefined;
+}
+
 export interface AuditLog {
   id: string;
   date: string;
@@ -236,6 +253,7 @@ export interface AppState {
   inventoryMovements: InventoryMovement[];
   dailyClosings: DailyClosing[];
   periodClosings: PeriodClosing[];
+  assets: Asset[];
   auditLogs: AuditLog[];
   orders: CustomerOrder[];
   reservations: Reservation[];

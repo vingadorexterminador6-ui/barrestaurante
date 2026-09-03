@@ -11,6 +11,7 @@ import {
 import { translate } from "./i18n";
 import type {
   AppState,
+  Asset,
   CashMovement,
   CashType,
   Customer,
@@ -94,6 +95,7 @@ export const defaultState = (): AppState => ({
   inventoryMovements: [],
   dailyClosings: [],
   periodClosings: [],
+  assets: [],
   auditLogs: [],
   orders: [],
   reservations: [],
@@ -180,6 +182,9 @@ interface StoreValue {
     note?: string;
   }) => void;
   // people
+  // assets (bens / património)
+  saveAsset: (a: Omit<Asset, "id"> & { id?: string | undefined }) => void;
+  deleteAsset: (id: string) => void;
   saveSupplier: (s: Omit<Supplier, "id"> & { id?: string | undefined }) => void;
   deleteSupplier: (id: string) => void;
   saveCustomer: (c: Omit<Customer, "id"> & { id?: string | undefined }) => void;
@@ -603,6 +608,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           );
         }),
 
+      saveAsset: (a) =>
+        patch((s) =>
+          a.id
+            ? log(
+                {
+                  ...s,
+                  assets: s.assets.map((x) => (x.id === a.id ? ({ ...x, ...a } as Asset) : x)),
+                },
+                "Bem actualizado",
+                a.name,
+                a.value,
+              )
+            : log(
+                { ...s, assets: [{ ...(a as Omit<Asset, "id">), id: uid() }, ...s.assets] },
+                "Bem registado",
+                a.name,
+                a.value,
+              ),
+        ),
+      deleteAsset: (id) =>
+        patch((s) => {
+          const asset = s.assets.find((x) => x.id === id);
+          return log(
+            { ...s, assets: s.assets.filter((x) => x.id !== id) },
+            "Bem removido",
+            asset?.name ?? id,
+          );
+        }),
       saveSupplier: (sup) =>
         patch((s) =>
           sup.id
