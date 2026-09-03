@@ -143,14 +143,15 @@ function ResetToHomeOnReload() {
 
   useEffect(() => {
     const path = window.location.pathname;
-    const keep = path === "/" || path.startsWith("/menu") ||
+    const isPublic = path === "/" || path.startsWith("/menu") ||
       path.startsWith("/cliente") ||
       path.startsWith("/conversa");
-    if (!keep) {
-      void router.navigate({ to: "/", replace: true });
+    if (!isPublic && path !== "/app") {
+      void router.navigate({ to: "/app", replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
 
   return null;
