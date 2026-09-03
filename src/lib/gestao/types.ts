@@ -123,6 +123,15 @@ export interface Customer {
   note?: string | undefined;
 }
 
+export interface CustomerAccount {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  createdAt: string;
+}
+
 export interface Employee {
   id: string;
   name: string;
@@ -247,6 +256,7 @@ export interface AppState {
   purchases: Purchase[];
   suppliers: Supplier[];
   customers: Customer[];
+  customerAccounts: CustomerAccount[];
   employees: Employee[];
   tables: RestaurantTable[];
   cashMovements: CashMovement[];
@@ -283,6 +293,8 @@ export interface CustomerOrder {
   paymentRef?: string | undefined;
   prepaidAmount?: number | undefined;
   saleId?: string | undefined;
+  accountId?: string | undefined;
+  stockApplied?: boolean | undefined;
 }
 
 export type ReservationStatus = "pendente" | "confirmada" | "recusada" | "concluida";
