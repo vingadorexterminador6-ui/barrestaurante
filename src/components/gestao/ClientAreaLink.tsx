@@ -14,7 +14,7 @@ export function ClientAreaLink() {
     setOrigin(window.location.origin);
   }, []);
 
-  const url = `${origin}/menu`;
+  const url = `${origin}/cliente`;
   const qr = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}`;
 
   const copy = async () => {
@@ -44,7 +44,7 @@ export function ClientAreaLink() {
       description="Partilhe para os clientes fazerem pedidos, reservas e pagamentos"
       actions={
         <Button asChild size="sm" variant="outline">
-          <Link to="/menu">
+          <Link to="/cliente">
             Abrir <ExternalLink className="ml-2 size-4" />
           </Link>
         </Button>

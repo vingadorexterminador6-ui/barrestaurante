@@ -143,7 +143,9 @@ function ResetToHomeOnReload() {
 
   useEffect(() => {
     const path = window.location.pathname;
-    const keep = path === "/" || path.startsWith("/menu") || path.startsWith("/conversa");
+    const keep = path === "/" || path.startsWith("/menu") ||
+      path.startsWith("/cliente") ||
+      path.startsWith("/conversa");
     if (!keep) {
       void router.navigate({ to: "/", replace: true });
     }
