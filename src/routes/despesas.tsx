@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useMetrics, useStore } from "@/lib/gestao/store";
+import type { Sector } from "@/lib/gestao/types";
 
 export const Route = createFileRoute("/despesas")({
   head: () => ({
