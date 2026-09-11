@@ -47,6 +47,7 @@ function ExpensesPage() {
   const [amount, setAmount] = useState("");
   const [payment, setPayment] = useState(state.settings.paymentMethods[0] ?? "Dinheiro");
   const [note, setNote] = useState("");
+  const [sector, setSector] = useState<Sector>("geral");
 
   const total = state.expenses.reduce((a, e) => a + e.amount, 0);
 
@@ -65,6 +66,7 @@ function ExpensesPage() {
       description,
       amount: value,
       paymentMethod: payment,
+      sector,
       ...(note ? { note } : {}),
     });
     setDescription("");
@@ -128,6 +130,19 @@ function ExpensesPage() {
                     {pm}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Área do gasto</Label>
+            <Select value={sector} onValueChange={(v) => setSector(v as Sector)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bar">Bar</SelectItem>
+                <SelectItem value="restaurante">Restaurante</SelectItem>
+                <SelectItem value="geral">Geral (ambos)</SelectItem>
               </SelectContent>
             </Select>
           </div>

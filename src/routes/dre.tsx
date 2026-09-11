@@ -61,7 +61,7 @@ function DrePage() {
   };
 
   const rows = [
-    { label: "Receita de vendas", pick: (k: string) => k, key: "revenue" as const },
+    { label: "Receita de vendas", key: "revenue" as const },
     { label: "Outras entradas", key: "otherIncome" as const },
     { label: "(-) Custo dos produtos vendidos", key: "cogs" as const, negative: true },
     { label: "= Lucro bruto", key: "grossProfit" as const, strong: true },
