@@ -1,6 +1,7 @@
 export type ManagementMode = "automatico" | "manual";
 export type Language = "pt" | "en" | "es" | "fr";
 export type Theme = "light" | "dark";
+export type Sector = "bar" | "restaurante" | "geral";
 
 export interface Establishment {
   name: string;
@@ -41,6 +42,7 @@ export interface Product {
   minStock: number;
   supplierId?: string | undefined;
   photo?: string | undefined;
+  sector?: Sector | undefined;
   active: boolean;
 }
 
@@ -73,6 +75,7 @@ export interface Expense {
   paymentMethod: string;
   note?: string | undefined;
   employeeId?: string | undefined;
+  sector?: Sector | undefined;
 }
 
 export interface Income {
@@ -101,6 +104,7 @@ export interface Purchase {
   total: number;
   paymentMethod: string;
   note?: string | undefined;
+  sector?: Sector | undefined;
 }
 
 export interface Supplier {
