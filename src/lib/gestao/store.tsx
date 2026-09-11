@@ -34,6 +34,7 @@ import type {
   RestaurantTable,
   Sale,
   SaleItem,
+  Sector,
   Settings,
   StockMovementType,
   Supplier,
@@ -183,6 +184,7 @@ interface StoreValue {
     items: PurchaseItem[];
     paymentMethod: string;
     note?: string;
+    sector?: Sector | undefined;
   }) => void;
   // people
   // assets (bens / património)
@@ -582,7 +584,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           );
         }),
 
-      addPurchase: ({ supplierId, supplierName, items, paymentMethod, note }) =>
+      addPurchase: ({ supplierId, supplierName, items, paymentMethod, note, sector }) =>
         patch((s) => {
           const total = items.reduce((acc, i) => acc + i.subtotal, 0);
           const purchase: Purchase = {
@@ -594,6 +596,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             total,
             paymentMethod,
             note,
+            sector,
           };
           const inv: InventoryMovement[] = [];
           const products = s.products.map((p) => {

@@ -36,7 +36,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useStore } from "@/lib/gestao/store";
-import type { Product } from "@/lib/gestao/types";
+import type { Product, Sector } from "@/lib/gestao/types";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({
@@ -72,6 +72,7 @@ const emptyForm = (minStock: number, unit: string, category: string) => ({
   stock: 0,
   minStock,
   active: true,
+  sector: "bar" as Sector,
   supplierId: "none",
 });
 
@@ -109,7 +110,7 @@ function ProductsPage() {
   };
 
   const openEdit = (p: Product) => {
-    setForm({ ...p, supplierId: p.supplierId ?? "none" });
+    setForm({ ...p, sector: p.sector ?? "bar", supplierId: p.supplierId ?? "none" });
     setOpen(true);
   };
 
@@ -179,6 +180,7 @@ function ProductsPage() {
               <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
                 <th className="py-2">Produto</th>
                 <th className="py-2">Categoria</th>
+                <th className="py-2">Área</th>
                 <th className="py-2">Compra</th>
                 <th className="py-2">Venda</th>
                 <th className="py-2">Stock</th>
@@ -194,6 +196,7 @@ function ProductsPage() {
                     <p className="text-xs text-muted-foreground">{p.sku || "sem código"}</p>
                   </td>
                   <td className="py-2.5">{p.category}</td>
+                  <td className="py-2.5 capitalize">{p.sector ?? "geral"}</td>
                   <td className="py-2.5">{money(p.costPrice)}</td>
                   <td className="py-2.5">{money(p.salePrice)}</td>
                   <td className="py-2.5">
@@ -260,6 +263,22 @@ function ProductsPage() {
                       {c}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Área do estabelecimento</Label>
+              <Select
+                value={form.sector}
+                onValueChange={(v) => setForm({ ...form, sector: v as Sector })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bar">Bar</SelectItem>
+                  <SelectItem value="restaurante">Restaurante</SelectItem>
+                  <SelectItem value="geral">Geral (ambos)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -19,6 +19,7 @@ import { Route as ComprasRouteImport } from './routes/compras'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as DespesasRouteImport } from './routes/despesas'
+import { Route as DreRouteImport } from './routes/dre'
 import { Route as EntradasRouteImport } from './routes/entradas'
 import { Route as FornecedoresRouteImport } from './routes/fornecedores'
 import { Route as FuncionariosRouteImport } from './routes/funcionarios'
@@ -79,6 +80,11 @@ const ConversaRoute = ConversaRouteImport.update({
 const DespesasRoute = DespesasRouteImport.update({
   id: '/despesas',
   path: '/despesas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DreRoute = DreRouteImport.update({
+  id: '/dre',
+  path: '/dre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EntradasRoute = EntradasRouteImport.update({
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/despesas': typeof DespesasRoute
+  '/dre': typeof DreRoute
   '/entradas': typeof EntradasRoute
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/despesas': typeof DespesasRoute
+  '/dre': typeof DreRoute
   '/entradas': typeof EntradasRoute
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/despesas': typeof DespesasRoute
+  '/dre': typeof DreRoute
   '/entradas': typeof EntradasRoute
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/conversa'
     | '/despesas'
+    | '/dre'
     | '/entradas'
     | '/fornecedores'
     | '/funcionarios'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/conversa'
     | '/despesas'
+    | '/dre'
     | '/entradas'
     | '/fornecedores'
     | '/funcionarios'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/conversa'
     | '/despesas'
+    | '/dre'
     | '/entradas'
     | '/fornecedores'
     | '/funcionarios'
@@ -290,6 +302,7 @@ export interface RootRouteChildren {
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   ConversaRoute: typeof ConversaRoute
   DespesasRoute: typeof DespesasRoute
+  DreRoute: typeof DreRoute
   EntradasRoute: typeof EntradasRoute
   FornecedoresRoute: typeof FornecedoresRoute
   FuncionariosRoute: typeof FuncionariosRoute
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/despesas'
       fullPath: '/despesas'
       preLoaderRoute: typeof DespesasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dre': {
+      id: '/dre'
+      path: '/dre'
+      fullPath: '/dre'
+      preLoaderRoute: typeof DreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/entradas': {
@@ -466,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfiguracoesRoute: ConfiguracoesRoute,
   ConversaRoute: ConversaRoute,
   DespesasRoute: DespesasRoute,
+  DreRoute: DreRoute,
   EntradasRoute: EntradasRoute,
   FornecedoresRoute: FornecedoresRoute,
   FuncionariosRoute: FuncionariosRoute,
