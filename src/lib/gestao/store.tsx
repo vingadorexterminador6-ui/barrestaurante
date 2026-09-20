@@ -251,11 +251,17 @@ interface StoreValue {
   ) => void;
   // closing
   closeDay: () => DailyClosing | null;
-  closePeriod: (period: ClosingPeriod) => PeriodClosing;
+  closePeriod: (period: ClosingPeriod) => PeriodClosing | null;
+  /** Data (ISO) até à qual os registos estão fechados e bloqueados. */
+  lockedUntil: string | null;
+  isLocked: (dateIso: string) => boolean;
+  /** Limpa históricos, preservando tudo o que já foi fechado. */
+  clearHistory: (scope: HistoryScope) => number;
   // data
   exportBackup: () => void;
   importBackup: (json: string) => boolean;
   clearAll: () => void;
+
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
