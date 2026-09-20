@@ -174,16 +174,23 @@ function CashPage() {
         title="Fecho diário"
         description="Fecha o dia e calcula automaticamente entradas, saídas e resultado"
         actions={
-          <Button
-            onClick={() => {
-              const c = closeDay();
-              if (c) toast.success(`Fecho diário concluído. Resultado: ${money(c.result)}`);
-            }}
-          >
-            Fazer fecho diário
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline">
+              <Link to="/fechamento">Painel de fechamento</Link>
+            </Button>
+            <Button
+              onClick={() => {
+                const c = closeDay();
+                if (c) toast.success(`Fecho diário concluído. Resultado: ${money(c.result)}`);
+                else toast.error("O dia de hoje já foi fechado e não pode ser alterado.");
+              }}
+            >
+              Fazer fecho diário
+            </Button>
+          </div>
         }
       >
+
         {state.dailyClosings.length === 0 ? (
           <EmptyState message="Nenhum fecho diário registado." />
         ) : (
@@ -233,7 +240,8 @@ function CashPage() {
               variant="secondary"
               onClick={() => {
                 const c = closePeriod("semanal");
-                toast.success(`Fecho semanal concluído. Resultado: ${money(c.result)}`);
+                if (c) toast.success(`Fecho semanal concluído. Resultado: ${money(c.result)}`);
+                else toast.error("Esta semana já foi fechada e não pode ser alterada.");
               }}
             >
               Fecho semanal
@@ -242,11 +250,13 @@ function CashPage() {
               variant="secondary"
               onClick={() => {
                 const c = closePeriod("mensal");
-                toast.success(`Fecho mensal concluído. Resultado: ${money(c.result)}`);
+                if (c) toast.success(`Fecho mensal concluído. Resultado: ${money(c.result)}`);
+                else toast.error("Este mês já foi fechado e não pode ser alterado.");
               }}
             >
               Fecho mensal
             </Button>
+
           </div>
         }
       >

@@ -21,6 +21,7 @@ import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as DreRouteImport } from './routes/dre'
 import { Route as EntradasRouteImport } from './routes/entradas'
+import { Route as FechamentoRouteImport } from './routes/fechamento'
 import { Route as FornecedoresRouteImport } from './routes/fornecedores'
 import { Route as FuncionariosRouteImport } from './routes/funcionarios'
 import { Route as ManualRouteImport } from './routes/manual'
@@ -92,6 +93,11 @@ const EntradasRoute = EntradasRouteImport.update({
   path: '/entradas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FechamentoRoute = FechamentoRouteImport.update({
+  id: '/fechamento',
+  path: '/fechamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FornecedoresRoute = FornecedoresRouteImport.update({
   id: '/fornecedores',
   path: '/fornecedores',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/despesas': typeof DespesasRoute
   '/dre': typeof DreRoute
   '/entradas': typeof EntradasRoute
+  '/fechamento': typeof FechamentoRoute
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/despesas': typeof DespesasRoute
   '/dre': typeof DreRoute
   '/entradas': typeof EntradasRoute
+  '/fechamento': typeof FechamentoRoute
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/despesas': typeof DespesasRoute
   '/dre': typeof DreRoute
   '/entradas': typeof EntradasRoute
+  '/fechamento': typeof FechamentoRoute
   '/fornecedores': typeof FornecedoresRoute
   '/funcionarios': typeof FuncionariosRoute
   '/manual': typeof ManualRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/dre'
     | '/entradas'
+    | '/fechamento'
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/dre'
     | '/entradas'
+    | '/fechamento'
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/dre'
     | '/entradas'
+    | '/fechamento'
     | '/fornecedores'
     | '/funcionarios'
     | '/manual'
@@ -304,6 +316,7 @@ export interface RootRouteChildren {
   DespesasRoute: typeof DespesasRoute
   DreRoute: typeof DreRoute
   EntradasRoute: typeof EntradasRoute
+  FechamentoRoute: typeof FechamentoRoute
   FornecedoresRoute: typeof FornecedoresRoute
   FuncionariosRoute: typeof FuncionariosRoute
   ManualRoute: typeof ManualRoute
@@ -402,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EntradasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fechamento': {
+      id: '/fechamento'
+      path: '/fechamento'
+      fullPath: '/fechamento'
+      preLoaderRoute: typeof FechamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fornecedores': {
       id: '/fornecedores'
       path: '/fornecedores'
@@ -488,6 +508,7 @@ const rootRouteChildren: RootRouteChildren = {
   DespesasRoute: DespesasRoute,
   DreRoute: DreRoute,
   EntradasRoute: EntradasRoute,
+  FechamentoRoute: FechamentoRoute,
   FornecedoresRoute: FornecedoresRoute,
   FuncionariosRoute: FuncionariosRoute,
   ManualRoute: ManualRoute,

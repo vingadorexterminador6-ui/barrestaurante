@@ -47,6 +47,14 @@ const SESSION_KEY = "gestao-cliente-sessao-v1";
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const now = () => new Date().toISOString();
 
+export type HistoryScope =
+  | "movimentos"
+  | "vendas"
+  | "pedidos"
+  | "registos"
+  | "tudo";
+
+
 export const defaultState = (): AppState => ({
   setupDone: false,
   manualSeen: false,
@@ -251,11 +259,17 @@ interface StoreValue {
   ) => void;
   // closing
   closeDay: () => DailyClosing | null;
-  closePeriod: (period: ClosingPeriod) => PeriodClosing;
+  closePeriod: (period: ClosingPeriod) => PeriodClosing | null;
+  /** Data (ISO) até à qual os registos estão fechados e bloqueados. */
+  lockedUntil: string | null;
+  isLocked: (dateIso: string) => boolean;
+  /** Limpa históricos, preservando tudo o que já foi fechado. */
+  clearHistory: (scope: HistoryScope) => number;
   // data
   exportBackup: () => void;
   importBackup: (json: string) => boolean;
   clearAll: () => void;
+
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -306,6 +320,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}`;
+
+    // Tudo com data até ao último fecho está bloqueado (não pode ser alterado nem apagado).
+    const closingDates = [
+      ...state.dailyClosings.map((c) => c.date),
+      ...state.periodClosings.map((c) => c.endDate),
+    ].map((d) => new Date(d).getTime());
+    const lockedUntil = closingDates.length
+      ? new Date(Math.max(...closingDates)).toISOString()
+      : null;
+
+
 
     return {
       state,
@@ -1045,6 +1070,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
       closeDay: () => {
         const today = new Date();
+        // Um dia já fechado não pode ser fechado nem alterado novamente.
+        if (state.dailyClosings.some((c) => isSameDay(c.date, today))) return null;
+
         const dayMovements = state.cashMovements.filter((m) => isSameDay(m.date, today));
         const salesToday = state.sales.filter((x) => isSameDay(x.date, today));
         const expensesToday = state.expenses.filter((x) => isSameDay(x.date, today));
@@ -1097,10 +1125,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           start = new Date(ref.getFullYear(), ref.getMonth(), 1);
           end = new Date(ref.getFullYear(), ref.getMonth() + 1, 1);
         }
+        // Período já fechado permanece bloqueado.
+        if (
+          state.periodClosings.some(
+            (c) => c.period === period && c.startDate === start.toISOString(),
+          )
+        )
+          return null;
         const inRange = (iso: string) => {
           const d = new Date(iso);
           return d >= start && d < end;
         };
+
         const movements = state.cashMovements.filter((m) => inRange(m.date));
         const sales = state.sales.filter((x) => inRange(x.date));
         const inflowsTotal = movements
@@ -1143,6 +1179,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return closing;
       },
 
+      lockedUntil,
+      isLocked: (dateIso: string) =>
+        lockedUntil ? new Date(dateIso).getTime() <= new Date(lockedUntil).getTime() : false,
+
+      clearHistory: (scope) => {
+        const lockedTime = lockedUntil ? new Date(lockedUntil).getTime() : 0;
+        const unlocked = (dateIso: string) => new Date(dateIso).getTime() > lockedTime;
+        let removed = 0;
+        const keep = <T extends { date: string }>(list: T[]) => {
+          const next = list.filter((x) => !unlocked(x.date));
+          removed += list.length - next.length;
+          return next;
+        };
+        patch((s) => {
+          const next: AppState = { ...s };
+          if (scope === "movimentos" || scope === "tudo") {
+            next.cashMovements = keep(s.cashMovements);
+            next.expenses = keep(s.expenses);
+            next.incomes = keep(s.incomes);
+            next.purchases = keep(s.purchases);
+          }
+          if (scope === "vendas" || scope === "tudo") {
+            next.sales = keep(s.sales);
+            next.inventoryMovements = keep(s.inventoryMovements);
+          }
+          if (scope === "pedidos" || scope === "tudo") {
+            next.orders = keep(s.orders);
+            next.reservations = keep(s.reservations);
+          }
+          if (scope === "registos" || scope === "tudo") {
+            next.auditLogs = keep(s.auditLogs);
+          }
+          return log(next, "Limpeza de histórico", `Âmbito: ${scope} (fechos preservados)`);
+        });
+        return removed;
+      },
 
 
       exportBackup: () => {
