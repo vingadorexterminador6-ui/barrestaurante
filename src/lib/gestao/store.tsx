@@ -1114,10 +1114,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           start = new Date(ref.getFullYear(), ref.getMonth(), 1);
           end = new Date(ref.getFullYear(), ref.getMonth() + 1, 1);
         }
+        // Período já fechado permanece bloqueado.
+        if (
+          state.periodClosings.some(
+            (c) => c.period === period && c.startDate === start.toISOString(),
+          )
+        )
+          return null;
         const inRange = (iso: string) => {
           const d = new Date(iso);
           return d >= start && d < end;
         };
+
         const movements = state.cashMovements.filter((m) => inRange(m.date));
         const sales = state.sales.filter((x) => inRange(x.date));
         const inflowsTotal = movements
