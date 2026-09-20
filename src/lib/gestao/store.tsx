@@ -321,6 +321,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         maximumFractionDigits: 2,
       })}`;
 
+    // Tudo com data até ao último fecho está bloqueado (não pode ser alterado nem apagado).
+    const closingDates = [
+      ...state.dailyClosings.map((c) => c.date),
+      ...state.periodClosings.map((c) => c.endDate),
+    ].map((d) => new Date(d).getTime());
+    const lockedUntil = closingDates.length
+      ? new Date(Math.max(...closingDates)).toISOString()
+      : null;
+
+
+
     return {
       state,
       hydrated,
