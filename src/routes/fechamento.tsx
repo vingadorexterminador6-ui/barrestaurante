@@ -97,7 +97,7 @@ function ClosingPage() {
           label="Fechado até"
           value={lockedUntil ? new Date(lockedUntil).toLocaleDateString("pt-PT") : "Sem fechos"}
           hint={lockedUntil ? "Tudo até esta data está bloqueado" : "Ainda nada foi fechado"}
-          tone={lockedUntil ? "warning" : undefined}
+          tone={lockedUntil ? "warning" : "default"}
         />
       </div>
 
