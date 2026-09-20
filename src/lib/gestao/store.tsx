@@ -1059,6 +1059,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
       closeDay: () => {
         const today = new Date();
+        // Um dia já fechado não pode ser fechado nem alterado novamente.
+        if (state.dailyClosings.some((c) => isSameDay(c.date, today))) return null;
+
         const dayMovements = state.cashMovements.filter((m) => isSameDay(m.date, today));
         const salesToday = state.sales.filter((x) => isSameDay(x.date, today));
         const expensesToday = state.expenses.filter((x) => isSameDay(x.date, today));
