@@ -1168,6 +1168,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return closing;
       },
 
+      lockedUntil,
+      isLocked: (dateIso: string) =>
+        lockedUntil ? new Date(dateIso).getTime() <= new Date(lockedUntil).getTime() : false,
+
+      clearHistory: (scope) => {
+        const lockedTime = lockedUntil ? new Date(lockedUntil).getTime() : 0;
+        const unlocked = (dateIso: string) => new Date(dateIso).getTime() > lockedTime;
+        let removed = 0;
+        const keep = <T extends { date: string }>(list: T[]) => {
+          const next = list.filter((x) => !unlocked(x.date));
+          removed += list.length - next.length;
+          return next;
+        };
+        patch((s) => {
+          const next: AppState = { ...s };
+          if (scope === "movimentos" || scope === "tudo") {
+            next.cashMovements = keep(s.cashMovements);
+            next.expenses = keep(s.expenses);
+            next.incomes = keep(s.incomes);
+            next.purchases = keep(s.purchases);
+          }
+          if (scope === "vendas" || scope === "tudo") {
+            next.sales = keep(s.sales);
+            next.inventoryMovements = keep(s.inventoryMovements);
+          }
+          if (scope === "pedidos" || scope === "tudo") {
+            next.orders = keep(s.orders);
+            next.reservations = keep(s.reservations);
+          }
+          if (scope === "registos" || scope === "tudo") {
+            next.auditLogs = keep(s.auditLogs);
+          }
+          return log(next, "Limpeza de histórico", `Âmbito: ${scope} (fechos preservados)`);
+        });
+        return removed;
+      },
 
 
       exportBackup: () => {
