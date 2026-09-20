@@ -240,7 +240,8 @@ function CashPage() {
               variant="secondary"
               onClick={() => {
                 const c = closePeriod("semanal");
-                toast.success(`Fecho semanal concluído. Resultado: ${money(c.result)}`);
+                if (c) toast.success(`Fecho semanal concluído. Resultado: ${money(c.result)}`);
+                else toast.error("Esta semana já foi fechada e não pode ser alterada.");
               }}
             >
               Fecho semanal
@@ -249,11 +250,13 @@ function CashPage() {
               variant="secondary"
               onClick={() => {
                 const c = closePeriod("mensal");
-                toast.success(`Fecho mensal concluído. Resultado: ${money(c.result)}`);
+                if (c) toast.success(`Fecho mensal concluído. Resultado: ${money(c.result)}`);
+                else toast.error("Este mês já foi fechado e não pode ser alterado.");
               }}
             >
               Fecho mensal
             </Button>
+
           </div>
         }
       >
