@@ -47,6 +47,14 @@ const SESSION_KEY = "gestao-cliente-sessao-v1";
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const now = () => new Date().toISOString();
 
+export type HistoryScope =
+  | "movimentos"
+  | "vendas"
+  | "pedidos"
+  | "registos"
+  | "tudo";
+
+
 export const defaultState = (): AppState => ({
   setupDone: false,
   manualSeen: false,
